@@ -1,16 +1,27 @@
 import { useState, useRef, useEffect } from 'react';
 import { getPlatformIcon, getPlatformColor } from '../utils/platformIcons';
 
-export default function LinkCard({ link, onDelete, onEdit, index }) {
+export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, overIndex, dragHandlers }) {
   const [copied, setCopied] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editPlatform, setEditPlatform] = useState(link.platform);
   const [editUrl, setEditUrl] = useState(link.url);
   const [editError, setEditError] = useState('');
+  const [faviconError, setFaviconError] = useState(false);
   const platformInputRef = useRef(null);
+  
   const colors = getPlatformColor(link.platform);
   const icon = getPlatformIcon(link.platform);
+
+  // Favicon API URL
+  let faviconUrl = '';
+  try {
+    const domain = new URL(link.url).hostname;
+    faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  } catch {
+    // Keep empty if invalid URL
+  }
 
   useEffect(() => {
     if (editing) platformInputRef.current?.focus();
@@ -79,6 +90,22 @@ export default function LinkCard({ link, onDelete, onEdit, index }) {
   };
 
   const shortUrl = link.url.length > 42 ? link.url.slice(0, 42) + '…' : link.url;
+
+  // ── Drag state classes ──
+  const isDragging = dragIndex === index;
+  const isOver = overIndex === index;
+  
+  let dragStyle = {};
+  if (isDragging) {
+    dragStyle = { opacity: 0.4, transform: 'scale(0.98)' };
+  } else if (isOver && dragIndex !== null) {
+    // Show visual indicator line where it will be dropped
+    if (dragIndex > index) {
+      dragStyle = { borderTop: '2px solid var(--accent)', transform: 'translateY(2px)' };
+    } else {
+      dragStyle = { borderBottom: '2px solid var(--accent)', transform: 'translateY(-2px)' };
+    }
+  }
 
   // ── Edit Mode ──
   if (editing) {
@@ -207,28 +234,61 @@ export default function LinkCard({ link, onDelete, onEdit, index }) {
         transform: deleting ? 'scale(0.96) translateY(-4px)' : undefined,
         transition: 'opacity 0.25s, transform 0.25s',
       }}
+      draggable={!!dragHandlers}
+      onDragStart={(e) => dragHandlers?.onDragStart(e, index)}
+      onDragEnter={(e) => dragHandlers?.onDragEnter(e, index)}
+      onDragOver={dragHandlers?.onDragOver}
+      onDragLeave={(e) => dragHandlers?.onDragLeave(e, index)}
+      onDrop={(e) => dragHandlers?.onDrop(e, index)}
+      onDragEnd={dragHandlers?.onDragEnd}
     >
       <div
         className="relative flex items-center gap-3.5 p-3.5 sm:p-4 rounded-xl transition-all duration-200"
         style={{
           background: 'var(--surface-2)',
           border: '1px solid var(--border)',
+          ...dragStyle
         }}
         onMouseEnter={(e) => {
+          if (isDragging) return;
           e.currentTarget.style.borderColor = colors.border;
           e.currentTarget.style.background = 'var(--surface-3)';
         }}
         onMouseLeave={(e) => {
+          if (isDragging) return;
           e.currentTarget.style.borderColor = 'var(--border)';
           e.currentTarget.style.background = 'var(--surface-2)';
         }}
       >
-        {/* Icon */}
+        {/* Drag Handle */}
+        {dragHandlers && (
+          <div className="shrink-0 cursor-grab active:cursor-grabbing text-[var(--text-tertiary)] opacity-0 group-hover:opacity-100 transition-opacity p-1 -ml-2">
+            <svg width="12" height="20" viewBox="0 0 12 20" fill="currentColor">
+              <circle cx="4" cy="4" r="1.5" />
+              <circle cx="8" cy="4" r="1.5" />
+              <circle cx="4" cy="10" r="1.5" />
+              <circle cx="8" cy="10" r="1.5" />
+              <circle cx="4" cy="16" r="1.5" />
+              <circle cx="8" cy="16" r="1.5" />
+            </svg>
+          </div>
+        )}
+
+        {/* Icon (Favicon or SVG) */}
         <div
-          className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
+          className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden"
           style={{ background: colors.bg, color: colors.text }}
         >
-          {icon}
+          {faviconUrl && !faviconError ? (
+            <img 
+              src={faviconUrl} 
+              alt={link.platform} 
+              className="w-5 h-5 object-contain"
+              onError={() => setFaviconError(true)}
+            />
+          ) : (
+            icon
+          )}
         </div>
 
         {/* Info */}

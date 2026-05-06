@@ -33,9 +33,18 @@ export function useLinks() {
     );
   }, []);
 
+  const reorderLinks = useCallback((fromIndex, toIndex) => {
+    setLinks((prev) => {
+      const result = Array.from(prev);
+      const [removed] = result.splice(fromIndex, 1);
+      result.splice(toIndex, 0, removed);
+      return result;
+    });
+  }, []);
+
   const deleteLink = useCallback((id) => {
     setLinks((prev) => prev.filter((link) => link.id !== id));
   }, []);
 
-  return { links, addLink, updateLink, deleteLink };
+  return { links, addLink, updateLink, deleteLink, reorderLinks };
 }

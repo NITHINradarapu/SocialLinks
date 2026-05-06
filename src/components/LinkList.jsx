@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LinkCard from './LinkCard';
+import { useDragReorder } from '../hooks/useDragReorder';
 
-export default function LinkList({ links, onDelete, onEdit }) {
+export default function LinkList({ links, onDelete, onEdit, onReorder }) {
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
+  const { dragIndex, overIndex, dragHandlers } = useDragReorder(links, onReorder);
 
   const filtered = links.filter((link) => {
     const q = search.toLowerCase();
     return link.platform.toLowerCase().includes(q) || link.url.toLowerCase().includes(q);
   });
+
+  const isSearching = search.length > 0;
 
   // ── Empty state ──
   if (links.length === 0) {
@@ -103,9 +107,18 @@ export default function LinkList({ links, onDelete, onEdit }) {
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 relative">
           {filtered.map((link, i) => (
-            <LinkCard key={link.id} link={link} onDelete={onDelete} onEdit={onEdit} index={i} />
+            <LinkCard 
+              key={link.id} 
+              link={link} 
+              onDelete={onDelete} 
+              onEdit={onEdit} 
+              index={i}
+              dragIndex={dragIndex}
+              overIndex={overIndex}
+              dragHandlers={isSearching ? null : dragHandlers}
+            />
           ))}
         </div>
       )}

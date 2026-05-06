@@ -25,3 +25,22 @@ export function saveLinks(links) {
     console.warn('Failed to save links to localStorage');
   }
 }
+
+const PROFILE_KEY = 'linkhub_profile';
+
+export function loadProfile() {
+  try {
+    const data = localStorage.getItem(PROFILE_KEY);
+    return data ? JSON.parse(data) : { name: 'My Profile', bio: 'Welcome to my LinkHub!', avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix' };
+  } catch {
+    return { name: 'My Profile', bio: 'Welcome to my LinkHub!', avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix' };
+  }
+}
+
+export function saveProfile(profile) {
+  try {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  } catch {
+    console.warn('Failed to save profile to localStorage');
+  }
+}
