@@ -57,3 +57,11 @@ export function getPlatformColor(platformName) {
   }
   return platformColors.default;
 }
+
+export function isKnownPlatform(platformName) {
+  const key = platformName.toLowerCase().trim();
+  for (const platform of Object.keys(platformIcons)) {
+    if (platform !== 'default' && key.includes(platform)) return true;
+  }
+  return false;
+}

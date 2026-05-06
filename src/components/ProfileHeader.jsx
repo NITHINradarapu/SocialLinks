@@ -6,7 +6,13 @@ const PREDEFINED_AVATARS = [
   { name: 'Bear', url: 'https://api.dicebear.com/7.x/notionists/svg?seed=Bear' },
   { name: 'Jasper', url: 'https://api.dicebear.com/7.x/notionists/svg?seed=Jasper' },
   { name: 'Mimi', url: 'https://api.dicebear.com/7.x/notionists/svg?seed=Mimi' },
-  { name: 'Scooter', url: 'https://api.dicebear.com/7.x/notionists/svg?seed=Scooter' }
+  { name: 'Scooter', url: 'https://api.dicebear.com/7.x/notionists/svg?seed=Scooter' },
+  { name: 'Mia', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Mia' },
+  { name: 'Sophie', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Sophie' },
+  { name: 'Chloe', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Chloe' },
+  { name: 'Zoey', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Zoey' },
+  { name: 'Lily', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Lily' },
+  { name: 'Daisy', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Daisy' }
 ];
 
 export default function ProfileHeader({ profile, onUpdate }) {

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { getPlatformIcon, getPlatformColor } from '../utils/platformIcons';
+import { getPlatformIcon, getPlatformColor, isKnownPlatform } from '../utils/platformIcons';
 
 export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, overIndex, dragHandlers }) {
   const [copied, setCopied] = useState(false);
@@ -13,14 +13,17 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
   
   const colors = getPlatformColor(link.platform);
   const icon = getPlatformIcon(link.platform);
+  const isKnown = isKnownPlatform(link.platform);
 
   // Favicon API URL
   let faviconUrl = '';
-  try {
-    const domain = new URL(link.url).hostname;
-    faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-  } catch {
-    // Keep empty if invalid URL
+  if (!isKnown) {
+    try {
+      const domain = new URL(link.url).hostname;
+      faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+    } catch {
+      // Keep empty if invalid URL
+    }
   }
 
   useEffect(() => {
