@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LinkCard from './LinkCard';
 
-export default function LinkList({ links, onDelete }) {
+export default function LinkList({ links, onDelete, onEdit }) {
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
 
@@ -105,7 +105,7 @@ export default function LinkList({ links, onDelete }) {
       ) : (
         <div className="flex flex-col gap-2">
           {filtered.map((link, i) => (
-            <LinkCard key={link.id} link={link} onDelete={onDelete} index={i} />
+            <LinkCard key={link.id} link={link} onDelete={onDelete} onEdit={onEdit} index={i} />
           ))}
         </div>
       )}

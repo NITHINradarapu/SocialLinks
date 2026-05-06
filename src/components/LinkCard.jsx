@@ -1,11 +1,20 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { getPlatformIcon, getPlatformColor } from '../utils/platformIcons';
 
-export default function LinkCard({ link, onDelete, index }) {
+export default function LinkCard({ link, onDelete, onEdit, index }) {
   const [copied, setCopied] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editPlatform, setEditPlatform] = useState(link.platform);
+  const [editUrl, setEditUrl] = useState(link.url);
+  const [editError, setEditError] = useState('');
+  const platformInputRef = useRef(null);
   const colors = getPlatformColor(link.platform);
   const icon = getPlatformIcon(link.platform);
+
+  useEffect(() => {
+    if (editing) platformInputRef.current?.focus();
+  }, [editing]);
 
   const handleCopy = async () => {
     try {
@@ -27,8 +36,167 @@ export default function LinkCard({ link, onDelete, index }) {
     setTimeout(() => onDelete(link.id), 250);
   };
 
+  const handleEditStart = () => {
+    setEditPlatform(link.platform);
+    setEditUrl(link.url);
+    setEditError('');
+    setEditing(true);
+  };
+
+  const handleEditCancel = () => {
+    setEditing(false);
+    setEditError('');
+  };
+
+  const validateUrl = (str) => {
+    try {
+      const u = new URL(str);
+      return u.protocol === 'http:' || u.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+
+  const handleEditSave = () => {
+    const p = editPlatform.trim();
+    const u = editUrl.trim();
+    if (!p) return setEditError('Platform name is required.');
+    if (!u) return setEditError('URL is required.');
+    if (!validateUrl(u)) return setEditError('Enter a valid URL.');
+    onEdit(link.id, p, u);
+    setEditing(false);
+    setEditError('');
+  };
+
+  const handleEditKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleEditSave();
+    }
+    if (e.key === 'Escape') {
+      handleEditCancel();
+    }
+  };
+
   const shortUrl = link.url.length > 42 ? link.url.slice(0, 42) + '…' : link.url;
 
+  // ── Edit Mode ──
+  if (editing) {
+    return (
+      <div
+        id={`link-card-${link.id}`}
+        className="group animate-fade-in-up"
+        style={{ animationDelay: `${index * 50}ms` }}
+      >
+        <div
+          className="relative rounded-xl transition-all duration-200"
+          style={{
+            background: 'var(--surface-2)',
+            border: '1px solid var(--accent)',
+            boxShadow: '0 0 0 3px var(--accent-glow)',
+          }}
+        >
+          {/* Edit Header */}
+          <div
+            className="flex items-center gap-2 px-4 py-2.5 rounded-t-xl"
+            style={{
+              background: 'var(--accent-glow)',
+              borderBottom: '1px solid var(--border)',
+            }}
+          >
+            <svg className="w-3.5 h-3.5" style={{ color: 'var(--accent-bright)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            <span className="text-[12px] font-semibold" style={{ color: 'var(--accent-bright)' }}>
+              Editing Link
+            </span>
+          </div>
+
+          {/* Edit Form */}
+          <div className="p-4 flex flex-col gap-3">
+            <div>
+              <label className="block text-[11px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>
+                Platform
+              </label>
+              <input
+                ref={platformInputRef}
+                id={`edit-platform-${link.id}`}
+                type="text"
+                value={editPlatform}
+                onChange={(e) => { setEditPlatform(e.target.value); setEditError(''); }}
+                onKeyDown={handleEditKeyDown}
+                placeholder="e.g., GitHub"
+                className="text-[13px]"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>
+                URL
+              </label>
+              <input
+                id={`edit-url-${link.id}`}
+                type="text"
+                value={editUrl}
+                onChange={(e) => { setEditUrl(e.target.value); setEditError(''); }}
+                onKeyDown={handleEditKeyDown}
+                placeholder="https://example.com/profile"
+                className="text-[13px]"
+              />
+            </div>
+
+            {/* Error */}
+            {editError && (
+              <div
+                className="flex items-center gap-2 text-[12px] px-3 py-2 rounded-lg animate-slide-down"
+                style={{ background: 'var(--danger-bg)', color: 'var(--danger)', border: '1px solid rgba(251,113,133,0.12)' }}
+              >
+                <svg className="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {editError}
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                id={`edit-save-${link.id}`}
+                onClick={handleEditSave}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-semibold cursor-pointer transition-all duration-200 hover:brightness-110 active:scale-[0.97]"
+                style={{
+                  background: 'linear-gradient(135deg, var(--accent), var(--accent-dim))',
+                  color: '#fff',
+                  border: 'none',
+                }}
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                Save
+              </button>
+              <button
+                id={`edit-cancel-${link.id}`}
+                onClick={handleEditCancel}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-[0.97]"
+                style={{
+                  background: 'var(--surface-3)',
+                  color: 'var(--text-secondary)',
+                  border: '1px solid var(--border)',
+                }}
+              >
+                Cancel
+              </button>
+              <span className="text-[10px] ml-auto" style={{ color: 'var(--text-tertiary)' }}>
+                <kbd className="px-1 py-0.5 rounded text-[10px] font-mono" style={{ background: 'var(--surface-3)', color: 'var(--accent-bright)', border: '1px solid var(--border)' }}>Enter</kbd> save · <kbd className="px-1 py-0.5 rounded text-[10px] font-mono" style={{ background: 'var(--surface-3)', color: 'var(--accent-bright)', border: '1px solid var(--border)' }}>Esc</kbd> cancel
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Normal Mode ──
   return (
     <div
       id={`link-card-${link.id}`}
@@ -107,6 +275,30 @@ export default function LinkCard({ link, onDelete, index }) {
                 Copy
               </>
             )}
+          </button>
+
+          <button
+            id={`edit-${link.id}`}
+            onClick={handleEditStart}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all duration-150 active:scale-95 opacity-50 hover:opacity-100"
+            style={{
+              background: 'transparent',
+              color: 'var(--accent-bright)',
+              border: '1px solid transparent',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--accent-glow)';
+              e.currentTarget.style.borderColor = 'rgba(129,140,248,0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.borderColor = 'transparent';
+            }}
+          >
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Edit
           </button>
 
           <button

@@ -3,7 +3,7 @@ import { loadLinks, saveLinks } from '../utils/storage';
 
 /**
  * Custom hook to manage links state with localStorage sync.
- * @returns {{ links, addLink, deleteLink }}
+ * @returns {{ links, addLink, updateLink, deleteLink }}
  */
 export function useLinks() {
   const [links, setLinks] = useState(() => loadLinks());
@@ -23,9 +23,19 @@ export function useLinks() {
     setLinks((prev) => [newLink, ...prev]);
   }, []);
 
+  const updateLink = useCallback((id, platform, url) => {
+    setLinks((prev) =>
+      prev.map((link) =>
+        link.id === id
+          ? { ...link, platform: platform.trim(), url: url.trim() }
+          : link
+      )
+    );
+  }, []);
+
   const deleteLink = useCallback((id) => {
     setLinks((prev) => prev.filter((link) => link.id !== id));
   }, []);
 
-  return { links, addLink, deleteLink };
+  return { links, addLink, updateLink, deleteLink };
 }
