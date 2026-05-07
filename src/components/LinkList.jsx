@@ -2,18 +2,30 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LinkCard from './LinkCard';
 import { useDragReorder } from '../hooks/useDragReorder';
+import { CATEGORIES, getPlatformCategory } from '../utils/platformIcons';
 
 export default function LinkList({ links, onDelete, onEdit, onReorder }) {
   const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const navigate = useNavigate();
   const { dragIndex, overIndex, dragHandlers } = useDragReorder(links, onReorder);
 
   const filtered = links.filter((link) => {
     const q = search.toLowerCase();
-    return link.platform.toLowerCase().includes(q) || link.url.toLowerCase().includes(q);
+    const matchesSearch = link.platform.toLowerCase().includes(q) || link.url.toLowerCase().includes(q);
+    
+    if (selectedCategory === 'All') return matchesSearch;
+    const category = link.category || getPlatformCategory(link.platform);
+    return matchesSearch && category === selectedCategory;
   });
 
-  const isSearching = search.length > 0;
+  const isFiltering = search.length > 0 || selectedCategory !== 'All';
+
+  // Compute unique categories from existing links + predefined
+  const uniqueCategories = [...new Set([
+    ...CATEGORIES,
+    ...links.map(l => l.category || getPlatformCategory(l.platform))
+  ])];
 
   // ── Empty state ──
   if (links.length === 0) {
@@ -68,7 +80,7 @@ export default function LinkList({ links, onDelete, onEdit, onReorder }) {
       </div>
 
       {/* Search */}
-      <div className="relative mb-4">
+      <div className="relative mb-3">
         <svg
           className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none"
           style={{ color: 'var(--text-tertiary)' }}
@@ -99,11 +111,33 @@ export default function LinkList({ links, onDelete, onEdit, onReorder }) {
         )}
       </div>
 
+      {/* Categories */}
+      <div className="flex gap-2 overflow-x-auto pb-1 mb-4 scrollbar-hide" style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
+        {uniqueCategories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+              selectedCategory === cat 
+                ? 'shadow-sm' 
+                : 'bg-transparent border'
+            }`}
+            style={{
+              backgroundColor: selectedCategory === cat ? 'var(--accent)' : 'var(--surface-1)',
+              color: selectedCategory === cat ? '#fff' : 'var(--text-secondary)',
+              borderColor: selectedCategory === cat ? 'var(--accent)' : 'var(--border)'
+            }}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
       {/* Results */}
       {filtered.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-            No links match "<span style={{ color: 'var(--accent-bright)' }}>{search}</span>"
+            No links match your filters.
           </p>
         </div>
       ) : (
@@ -117,7 +151,8 @@ export default function LinkList({ links, onDelete, onEdit, onReorder }) {
               index={i}
               dragIndex={dragIndex}
               overIndex={overIndex}
-              dragHandlers={isSearching ? null : dragHandlers}
+              dragHandlers={isFiltering ? null : dragHandlers}
+              uniqueCategories={uniqueCategories.filter(c => c !== 'All')}
             />
           ))}
         </div>

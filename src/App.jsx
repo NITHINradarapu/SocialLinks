@@ -31,7 +31,7 @@ export default function App() {
               </>
             }
           />
-          <Route path="/add" element={<AddLink onAdd={addLink} />} />
+          <Route path="/add" element={<AddLink onAdd={addLink} links={links} />} />
           <Route path="/profile" element={<PublicProfile />} />
         </Routes>
       </main>

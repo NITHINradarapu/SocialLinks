@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CATEGORIES, getPlatformCategory } from '../utils/platformIcons';
 
-export default function AddLink({ onAdd }) {
+export default function AddLink({ onAdd, links = [] }) {
   const [platform, setPlatform] = useState('');
   const [url, setUrl] = useState('');
+  const [category, setCategory] = useState('Other');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const platformRef = useRef(null);
@@ -23,9 +25,10 @@ export default function AddLink({ onAdd }) {
     if (!p) return setError('Enter a platform name.');
     if (!u) return setError('Enter a URL.');
     if (!validateUrl(u)) return setError('Enter a valid URL (e.g. https://github.com/user).');
-    onAdd(p, u);
+    onAdd(p, u, category);
     setPlatform('');
     setUrl('');
+    setCategory('Other');
     setSuccess(true);
     setTimeout(() => setSuccess(false), 2000);
   };
@@ -40,6 +43,7 @@ export default function AddLink({ onAdd }) {
 
   const selectPreset = (p) => {
     setPlatform(p.name);
+    setCategory(getPlatformCategory(p.name));
     setUrl('');
     setError('');
     setTimeout(() => document.getElementById('url-input')?.focus(), 50);
@@ -109,9 +113,38 @@ export default function AddLink({ onAdd }) {
                 id="platform-input"
                 type="text"
                 value={platform}
-                onChange={(e) => { setPlatform(e.target.value); setError(''); }}
+                onChange={(e) => { 
+                  const val = e.target.value;
+                  setPlatform(val); 
+                  setCategory(getPlatformCategory(val));
+                  setError(''); 
+                }}
                 placeholder="e.g., GitHub"
               />
+            </div>
+
+            <div>
+              <label htmlFor="category-input" className="block text-[12.5px] font-semibold mb-1.5" style={{ color: 'var(--text-secondary)' }}>
+                Category
+              </label>
+              <input
+                id="category-input"
+                list="category-suggestions"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                placeholder="Select or type a category"
+                className="w-full rounded-lg px-3 py-2 text-[13px] outline-none transition-all duration-200"
+                style={{
+                  background: 'var(--surface-2)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border)'
+                }}
+              />
+              <datalist id="category-suggestions">
+                {[...new Set([...CATEGORIES.filter(c => c !== 'All'), ...links.map(l => l.category || getPlatformCategory(l.platform))])].map(cat => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
             </div>
 
             <div>

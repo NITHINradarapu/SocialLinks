@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import { getPlatformIcon, getPlatformColor, isKnownPlatform } from '../utils/platformIcons';
+import { getPlatformIcon, getPlatformColor, isKnownPlatform, CATEGORIES, getPlatformCategory } from '../utils/platformIcons';
 
-export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, overIndex, dragHandlers }) {
+export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, overIndex, dragHandlers, uniqueCategories = [] }) {
   const [copied, setCopied] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editPlatform, setEditPlatform] = useState(link.platform);
   const [editUrl, setEditUrl] = useState(link.url);
+  const [editCategory, setEditCategory] = useState(link.category || getPlatformCategory(link.platform));
   const [editError, setEditError] = useState('');
   const [faviconError, setFaviconError] = useState(false);
   const platformInputRef = useRef(null);
@@ -53,6 +54,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
   const handleEditStart = () => {
     setEditPlatform(link.platform);
     setEditUrl(link.url);
+    setEditCategory(link.category || getPlatformCategory(link.platform));
     setEditError('');
     setEditing(true);
   };
@@ -77,7 +79,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
     if (!p) return setEditError('Platform name is required.');
     if (!u) return setEditError('URL is required.');
     if (!validateUrl(u)) return setEditError('Enter a valid URL.');
-    onEdit(link.id, p, u);
+    onEdit(link.id, p, u, editCategory);
     setEditing(false);
     setEditError('');
   };
@@ -158,6 +160,27 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
                 placeholder="e.g., GitHub"
                 className="text-[13px]"
               />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>
+                Category
+              </label>
+              <input
+                id={`edit-category-${link.id}`}
+                list={`category-suggestions-${link.id}`}
+                value={editCategory}
+                onChange={(e) => setEditCategory(e.target.value)}
+                className="w-full text-[13px] rounded bg-transparent outline-none px-2 py-1.5"
+                style={{
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border)'
+                }}
+              />
+              <datalist id={`category-suggestions-${link.id}`}>
+                {(uniqueCategories.length > 0 ? uniqueCategories : CATEGORIES.filter(c => c !== 'All')).map(cat => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
             </div>
             <div>
               <label className="block text-[11px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>

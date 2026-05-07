@@ -65,3 +65,22 @@ export function isKnownPlatform(platformName) {
   }
   return false;
 }
+
+export const CATEGORIES = ['All', 'Social', 'Coding', 'Portfolio', 'Other'];
+
+const platformCategories = {
+  github: 'Coding',
+  leetcode: 'Coding',
+  linkedin: 'Social',
+  twitter: 'Social',
+  portfolio: 'Portfolio'
+};
+
+export function getPlatformCategory(platformName) {
+  if (!platformName) return 'Other';
+  const key = platformName.toLowerCase().trim();
+  for (const [platform, category] of Object.entries(platformCategories)) {
+    if (key.includes(platform)) return category;
+  }
+  return 'Other';
+}

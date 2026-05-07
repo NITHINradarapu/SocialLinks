@@ -13,21 +13,22 @@ export function useLinks() {
     saveLinks(links);
   }, [links]);
 
-  const addLink = useCallback((platform, url) => {
+  const addLink = useCallback((platform, url, category) => {
     const newLink = {
       id: crypto.randomUUID(),
       platform: platform.trim(),
       url: url.trim(),
+      category: category || 'Other',
       createdAt: Date.now(),
     };
     setLinks((prev) => [newLink, ...prev]);
   }, []);
 
-  const updateLink = useCallback((id, platform, url) => {
+  const updateLink = useCallback((id, platform, url, category) => {
     setLinks((prev) =>
       prev.map((link) =>
         link.id === id
-          ? { ...link, platform: platform.trim(), url: url.trim() }
+          ? { ...link, platform: platform.trim(), url: url.trim(), category: category || 'Other' }
           : link
       )
     );
