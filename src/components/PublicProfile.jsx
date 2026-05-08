@@ -1,6 +1,6 @@
 import { useLinks } from '../hooks/useLinks';
 import { useProfile } from '../hooks/useProfile';
-import { getPlatformIcon, getPlatformColor } from '../utils/platformIcons';
+import { getPlatformIcon, getPlatformColor, getPlatformCategory } from '../utils/platformIcons';
 
 function PublicLinkCard({ link, index }) {
   const colors = getPlatformColor(link.platform);
@@ -50,6 +50,26 @@ export default function PublicProfile() {
   const { profile } = useProfile();
   const { links } = useLinks();
 
+  const groupedLinks = links.reduce((acc, link) => {
+    const category = link.category || getPlatformCategory(link.platform);
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(link);
+    return acc;
+  }, {});
+
+  // Predefined categories first, then custom ones, then 'Other' at the bottom
+  const predefinedOrder = ['Portfolio', 'Coding', 'Social'];
+  const categories = Object.keys(groupedLinks).sort((a, b) => {
+    if (a === 'Other') return 1;
+    if (b === 'Other') return -1;
+    const indexA = predefinedOrder.indexOf(a);
+    const indexB = predefinedOrder.indexOf(b);
+    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+    if (indexA !== -1) return -1;
+    if (indexB !== -1) return 1;
+    return a.localeCompare(b);
+  });
+
   return (
     <div className="min-h-screen py-16 px-5 sm:px-6 flex flex-col items-center relative overflow-hidden">
       {/* Background decoration */}
@@ -67,10 +87,19 @@ export default function PublicProfile() {
         </div>
 
         {/* Links */}
-        <div className="flex flex-col gap-3">
-          {links.length > 0 ? (
-            links.map((link, i) => (
-              <PublicLinkCard key={link.id} link={link} index={i} />
+        <div className="flex flex-col gap-8 w-full">
+          {categories.length > 0 ? (
+            categories.map((category, catIndex) => (
+              <div key={category} className="animate-fade-in-up" style={{ animationDelay: `${catIndex * 100}ms` }}>
+                <h2 className="text-[12px] font-bold uppercase tracking-widest mb-3 pl-1" style={{ color: 'var(--text-tertiary)' }}>
+                  {category}
+                </h2>
+                <div className="flex flex-col gap-3">
+                  {groupedLinks[category].map((link, i) => (
+                    <PublicLinkCard key={link.id} link={link} index={i} />
+                  ))}
+                </div>
+              </div>
             ))
           ) : (
             <p className="text-center py-10 text-[14px]" style={{ color: 'var(--text-tertiary)' }}>No links added yet.</p>
