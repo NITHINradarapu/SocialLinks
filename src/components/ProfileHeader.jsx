@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import { toast } from 'react-hot-toast';
 
 const PREDEFINED_AVATARS = [
   { name: 'Felix', url: 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix' },
@@ -16,6 +18,7 @@ const PREDEFINED_AVATARS = [
 ];
 
 export default function ProfileHeader({ profile, onUpdate }) {
+  const { user } = useAuth();
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(profile.name);
   const [editBio, setEditBio] = useState(profile.bio);
@@ -36,15 +39,17 @@ export default function ProfileHeader({ profile, onUpdate }) {
   const handleEditSave = () => {
     onUpdate({ name: editName.trim(), bio: editBio.trim(), avatar: editAvatar });
     setEditing(false);
+    toast.success('Profile saved!');
   };
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/profile`;
+    if (!user) return;
+    const url = `${window.location.origin}/p/${user.uid}`;
     try {
       await navigator.clipboard.writeText(url);
-      alert('Public profile link copied to clipboard!');
+      toast.success('Public link copied to clipboard!');
     } catch {
-      alert(`Could not copy automatically. Here is your link:\n${url}`);
+      toast.error('Could not copy link automatically.');
     }
   };
 
