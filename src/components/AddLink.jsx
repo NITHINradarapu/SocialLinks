@@ -1,13 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CATEGORIES, getPlatformCategory } from '../utils/platformIcons';
+import { toast } from 'react-hot-toast';
 
 export default function AddLink({ onAdd, links = [] }) {
   const [platform, setPlatform] = useState('');
   const [url, setUrl] = useState('');
   const [category, setCategory] = useState('Other');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
   const platformRef = useRef(null);
   const navigate = useNavigate();
 
@@ -20,17 +19,16 @@ export default function AddLink({ onAdd, links = [] }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError('');
     const p = platform.trim(), u = url.trim();
-    if (!p) return setError('Enter a platform name.');
-    if (!u) return setError('Enter a URL.');
-    if (!validateUrl(u)) return setError('Enter a valid URL (e.g. https://github.com/user).');
+    if (!p) return toast.error('Enter a platform name.');
+    if (!u) return toast.error('Enter a URL.');
+    if (!validateUrl(u)) return toast.error('Enter a valid URL (e.g. https://github.com/user).');
+    
     onAdd(p, u, category);
     setPlatform('');
     setUrl('');
     setCategory('Other');
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 2000);
+    toast.success('Link added successfully!');
   };
 
   const presets = [
@@ -45,7 +43,6 @@ export default function AddLink({ onAdd, links = [] }) {
     setPlatform(p.name);
     setCategory(getPlatformCategory(p.name));
     setUrl('');
-    setError('');
     setTimeout(() => document.getElementById('url-input')?.focus(), 50);
   };
 
@@ -117,7 +114,6 @@ export default function AddLink({ onAdd, links = [] }) {
                   const val = e.target.value;
                   setPlatform(val); 
                   setCategory(getPlatformCategory(val));
-                  setError(''); 
                 }}
                 placeholder="e.g., GitHub"
               />
@@ -155,30 +151,11 @@ export default function AddLink({ onAdd, links = [] }) {
                 id="url-input"
                 type="text"
                 value={url}
-                onChange={(e) => { setUrl(e.target.value); setError(''); }}
+                onChange={(e) => setUrl(e.target.value)}
                 placeholder={presets.find(x => x.name === platform)?.ph || 'https://example.com/profile'}
               />
             </div>
 
-            {/* Feedback */}
-            {error && (
-              <div className="flex items-center gap-2 text-[12.5px] px-3 py-2.5 rounded-lg animate-slide-down"
-                style={{ background: 'var(--danger-bg)', color: 'var(--danger)', border: '1px solid rgba(251,113,133,0.12)' }}>
-                <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {error}
-              </div>
-            )}
-            {success && (
-              <div className="flex items-center gap-2 text-[12.5px] px-3 py-2.5 rounded-lg animate-slide-down"
-                style={{ background: 'var(--success-bg)', color: 'var(--success)', border: '1px solid rgba(52,211,153,0.12)' }}>
-                <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                Link added successfully!
-              </div>
-            )}
 
             {/* Buttons */}
             <div className="flex gap-2.5 pt-1">

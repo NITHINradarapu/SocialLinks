@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { getPlatformIcon, getPlatformColor, isKnownPlatform, CATEGORIES, getPlatformCategory } from '../utils/platformIcons';
+import { toast } from 'react-hot-toast';
 
 export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, overIndex, dragHandlers, uniqueCategories = [] }) {
   const [copied, setCopied] = useState(false);
@@ -8,7 +9,6 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
   const [editPlatform, setEditPlatform] = useState(link.platform);
   const [editUrl, setEditUrl] = useState(link.url);
   const [editCategory, setEditCategory] = useState(link.category || getPlatformCategory(link.platform));
-  const [editError, setEditError] = useState('');
   const [faviconError, setFaviconError] = useState(false);
   const platformInputRef = useRef(null);
   
@@ -43,25 +43,27 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
       document.body.removeChild(ta);
     }
     setCopied(true);
+    toast.success('Link copied!');
     setTimeout(() => setCopied(false), 1500);
   };
 
   const handleDelete = () => {
     setDeleting(true);
-    setTimeout(() => onDelete(link.id), 250);
+    setTimeout(() => {
+      onDelete(link.id);
+      toast.success('Link deleted');
+    }, 250);
   };
 
   const handleEditStart = () => {
     setEditPlatform(link.platform);
     setEditUrl(link.url);
     setEditCategory(link.category || getPlatformCategory(link.platform));
-    setEditError('');
     setEditing(true);
   };
 
   const handleEditCancel = () => {
     setEditing(false);
-    setEditError('');
   };
 
   const validateUrl = (str) => {
@@ -76,12 +78,13 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
   const handleEditSave = () => {
     const p = editPlatform.trim();
     const u = editUrl.trim();
-    if (!p) return setEditError('Platform name is required.');
-    if (!u) return setEditError('URL is required.');
-    if (!validateUrl(u)) return setEditError('Enter a valid URL.');
+    if (!p) return toast.error('Platform name is required.');
+    if (!u) return toast.error('URL is required.');
+    if (!validateUrl(u)) return toast.error('Enter a valid URL.');
+    
     onEdit(link.id, p, u, editCategory);
     setEditing(false);
-    setEditError('');
+    toast.success('Link updated!');
   };
 
   const handleEditKeyDown = (e) => {
@@ -155,7 +158,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
                 id={`edit-platform-${link.id}`}
                 type="text"
                 value={editPlatform}
-                onChange={(e) => { setEditPlatform(e.target.value); setEditError(''); }}
+                onChange={(e) => setEditPlatform(e.target.value)}
                 onKeyDown={handleEditKeyDown}
                 placeholder="e.g., GitHub"
                 className="text-[13px]"
@@ -190,25 +193,12 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
                 id={`edit-url-${link.id}`}
                 type="text"
                 value={editUrl}
-                onChange={(e) => { setEditUrl(e.target.value); setEditError(''); }}
+                onChange={(e) => setEditUrl(e.target.value)}
                 onKeyDown={handleEditKeyDown}
                 placeholder="https://example.com/profile"
                 className="text-[13px]"
               />
             </div>
-
-            {/* Error */}
-            {editError && (
-              <div
-                className="flex items-center gap-2 text-[12px] px-3 py-2 rounded-lg animate-slide-down"
-                style={{ background: 'var(--danger-bg)', color: 'var(--danger)', border: '1px solid rgba(251,113,133,0.12)' }}
-              >
-                <svg className="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {editError}
-              </div>
-            )}
 
             {/* Actions */}
             <div className="flex items-center gap-2 pt-1">

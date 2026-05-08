@@ -1,5 +1,7 @@
-import { useLinks } from '../hooks/useLinks';
-import { useProfile } from '../hooks/useProfile';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { getProfileFromFirestore } from '../services/profileService';
+import { getLinksFromFirestore } from '../services/linkService';
 import { getPlatformIcon, getPlatformColor, getPlatformCategory } from '../utils/platformIcons';
 
 function PublicLinkCard({ link, index }) {
@@ -47,13 +49,51 @@ function PublicLinkCard({ link, index }) {
 }
 
 export default function PublicProfile() {
-  const { profile, loadingProfile } = useProfile();
-  const { links, loadingLinks } = useLinks();
+  const { uid } = useParams();
+  const [profile, setProfile] = useState(null);
+  const [links, setLinks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  if (loadingLinks || loadingProfile) {
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const [profileData, linksData] = await Promise.all([
+          getProfileFromFirestore(uid),
+          getLinksFromFirestore(uid)
+        ]);
+        
+        if (profileData) {
+          setProfile(profileData);
+        } else {
+          // If no profile exists for this UID
+          setProfile({ name: 'User', bio: 'No bio provided', avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=fallback' });
+        }
+        setLinks(linksData || []);
+      } catch (err) {
+        console.error("Error fetching public profile:", err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (uid) fetchData();
+  }, [uid]);
+
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-center px-4" style={{ color: 'var(--text-primary)' }}>
+        <h1 className="text-2xl font-bold mb-2">User Not Found</h1>
+        <p style={{ color: 'var(--text-secondary)' }}>The profile you are looking for does not exist.</p>
       </div>
     );
   }
