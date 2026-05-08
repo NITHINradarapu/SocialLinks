@@ -47,8 +47,16 @@ function PublicLinkCard({ link, index }) {
 }
 
 export default function PublicProfile() {
-  const { profile } = useProfile();
-  const { links } = useLinks();
+  const { profile, loadingProfile } = useProfile();
+  const { links, loadingLinks } = useLinks();
+
+  if (loadingLinks || loadingProfile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   const groupedLinks = links.reduce((acc, link) => {
     const category = link.category || getPlatformCategory(link.platform);
