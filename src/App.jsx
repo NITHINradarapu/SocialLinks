@@ -10,6 +10,8 @@ import ProfileHeader from "./components/ProfileHeader";
 import PublicProfile from "./components/PublicProfile";
 import ThemeSwitcher from "./components/ThemeSwitcher";
 import Login from "./components/Login";
+import LandingPage from "./components/LandingPage";
+import NotFound from "./components/NotFound";
 import { Toaster } from "react-hot-toast";
 
 export default function App() {
@@ -21,6 +23,9 @@ export default function App() {
   const location = useLocation();
   const isPublicProfile = location.pathname.startsWith("/p/");
   const isLoginPage = location.pathname === "/login";
+  const isLandingPage = location.pathname === "/" && !user;
+  const isKnownPath = ["/", "/add", "/login"].includes(location.pathname) || isPublicProfile;
+  const hideLayout = isPublicProfile || isLoginPage || isLandingPage || !isKnownPath;
 
   if (loading || (!isPublicProfile && user && loadingLinks) || (!isPublicProfile && user && loadingProfile)) {
     return (
@@ -56,9 +61,9 @@ export default function App() {
           },
         }}
       />
-      {!isPublicProfile && !isLoginPage && <Navbar linkCount={links.length} />}
+      {!hideLayout && <Navbar linkCount={links.length} />}
       <main
-        className={`flex-1 w-full ${isPublicProfile ? "" : "max-w-2xl mx-auto px-5 sm:px-6 py-8"}`}
+        className={`flex-1 w-full ${hideLayout ? "" : "max-w-2xl mx-auto px-5 sm:px-6 py-8"}`}
       >
         <Routes>
           <Route
@@ -75,7 +80,7 @@ export default function App() {
                   />
                 </>
               ) : (
-                <Navigate to="/login" replace />
+                <LandingPage />
               )
             }
           />
@@ -91,10 +96,11 @@ export default function App() {
           />
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
           <Route path="/p/:uid" element={<PublicProfile />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
 
-      {!isPublicProfile && !isLoginPage && (
+      {!hideLayout && (
         <footer
           className="text-center py-5 text-[11px]"
           style={{ color: "var(--text-tertiary)" }}
@@ -103,7 +109,7 @@ export default function App() {
         </footer>
       )}
 
-      {!isPublicProfile && !isLoginPage && (
+      {!hideLayout && (
         <ThemeSwitcher
           mode={mode}
           setMode={setMode}
