@@ -220,6 +220,20 @@ export default function ProfileHeader({ profile, onUpdate }) {
       <div className="flex-1 text-center sm:text-left min-w-0">
         <h2 className="text-xl font-bold truncate" style={{ color: 'var(--text-primary)' }}>{profile.name}</h2>
         <p className="text-[13px] mt-1" style={{ color: 'var(--text-secondary)' }}>{profile.bio}</p>
+        
+        {/* Public Link Preview */}
+        <div className="mt-2.5 flex items-center justify-center sm:justify-start gap-1.5">
+          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Public Link:</span>
+          <a 
+            href={profile.username ? `/${profile.username}` : `/p/${user?.uid}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[12px] font-medium hover:underline transition-colors"
+            style={{ color: 'var(--accent)' }}
+          >
+            {window.location.host}{profile.username ? `/${profile.username}` : `/p/${user?.uid?.slice(0, 8)}...`}
+          </a>
+        </div>
       </div>
 
       <div className="flex items-center gap-2 shrink-0">
