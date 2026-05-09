@@ -96,6 +96,7 @@ export default function App() {
           />
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
           <Route path="/p/:uid" element={<PublicProfile />} />
+          <Route path="/:username" element={<PublicProfile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

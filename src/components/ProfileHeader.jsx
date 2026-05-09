@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-hot-toast';
+import { checkUsernameAvailability, claimUsername, RESERVED_USERNAMES } from '../services/profileService';
 
 const PREDEFINED_AVATARS = [
   { name: 'Felix', url: 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix' },
@@ -23,28 +24,90 @@ export default function ProfileHeader({ profile, onUpdate }) {
   const [editName, setEditName] = useState(profile.name);
   const [editBio, setEditBio] = useState(profile.bio);
   const [editAvatar, setEditAvatar] = useState(profile.avatar);
+  const [editUsername, setEditUsername] = useState(profile.username || '');
+  const [usernameStatus, setUsernameStatus] = useState('idle'); // 'idle', 'loading', 'available', 'unavailable', 'invalid'
   const nameInputRef = useRef(null);
 
   useEffect(() => {
     if (editing) nameInputRef.current?.focus();
   }, [editing]);
 
+  useEffect(() => {
+    const check = async () => {
+      if (!editing) return;
+      
+      const cleanUsername = editUsername.trim().toLowerCase();
+      
+      if (cleanUsername === (profile.username || '').toLowerCase()) {
+        setUsernameStatus('idle');
+        return;
+      }
+      
+      if (cleanUsername.length < 3) {
+        setUsernameStatus('invalid');
+        return;
+      }
+      
+      if (!/^[a-z0-9_]+$/.test(cleanUsername)) {
+        setUsernameStatus('invalid');
+        return;
+      }
+      
+      if (RESERVED_USERNAMES.includes(cleanUsername)) {
+        setUsernameStatus('unavailable');
+        return;
+      }
+
+      setUsernameStatus('loading');
+      const available = await checkUsernameAvailability(cleanUsername);
+      setUsernameStatus(available ? 'available' : 'unavailable');
+    };
+
+    const timer = setTimeout(check, 500);
+    return () => clearTimeout(timer);
+  }, [editUsername, editing, profile.username]);
+
   const handleEditStart = () => {
     setEditName(profile.name);
     setEditBio(profile.bio);
     setEditAvatar(profile.avatar);
+    setEditUsername(profile.username || '');
+    setUsernameStatus('idle');
     setEditing(true);
   };
 
-  const handleEditSave = () => {
-    onUpdate({ name: editName.trim(), bio: editBio.trim(), avatar: editAvatar });
+  const handleEditSave = async () => {
+    const cleanUsername = editUsername.trim().toLowerCase();
+    
+    // Validate username if changed
+    if (cleanUsername !== (profile.username || '').toLowerCase()) {
+      if (usernameStatus !== 'available') {
+        toast.error('Please choose a valid and available username');
+        return;
+      }
+      try {
+        await claimUsername(user.uid, cleanUsername, profile.username);
+      } catch (err) {
+        toast.error('Failed to claim username');
+        return;
+      }
+    }
+
+    onUpdate({ 
+      name: editName.trim(), 
+      bio: editBio.trim(), 
+      avatar: editAvatar,
+      username: cleanUsername 
+    });
     setEditing(false);
     toast.success('Profile saved!');
   };
 
   const handleShare = async () => {
     if (!user) return;
-    const url = `${window.location.origin}/p/${user.uid}`;
+    const url = profile.username 
+      ? `${window.location.origin}/${profile.username}`
+      : `${window.location.origin}/p/${user.uid}`;
     try {
       await navigator.clipboard.writeText(url);
       toast.success('Public link copied to clipboard!');
@@ -98,6 +161,32 @@ export default function ProfileHeader({ profile, onUpdate }) {
               placeholder="Short bio..."
               className="w-full"
             />
+          </div>
+
+          <div>
+            <label className="text-[11px] font-semibold mb-1 block" style={{ color: 'var(--text-tertiary)' }}>
+              Username {usernameStatus === 'loading' && <span className="animate-pulse">...</span>}
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={editUsername}
+                onChange={(e) => setEditUsername(e.target.value)}
+                placeholder="username"
+                className={`w-full ${
+                  usernameStatus === 'available' ? 'border-green-500/50' : 
+                  usernameStatus === 'unavailable' || usernameStatus === 'invalid' ? 'border-red-500/50' : ''
+                }`}
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wider">
+                {usernameStatus === 'available' && <span className="text-green-500">Available</span>}
+                {usernameStatus === 'unavailable' && <span className="text-red-500">Taken</span>}
+                {usernameStatus === 'invalid' && <span className="text-red-500">Min 3 chars (a-z, 0-9, _)</span>}
+              </div>
+            </div>
+            <p className="text-[10px] mt-1.5 text-[var(--text-tertiary)]">
+              Your profile will be at: <span className="text-[var(--accent)]">{window.location.origin}/{editUsername || 'username'}</span>
+            </p>
           </div>
 
           <div className="flex gap-2 mt-2">
