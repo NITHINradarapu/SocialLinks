@@ -120,7 +120,7 @@ export default function About() {
                     <div className="text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">
                       Email
                     </div>
-                    <div className="text-[14px] font-semibold text-[var(--text-primary)]">
+                    <div className="text-[14px] font-semibold text-[var(--text-primary)] break-all">
                       radarapunithin05@gmail.com
                     </div>
                   </div>
@@ -149,7 +149,7 @@ export default function About() {
                     <div className="text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">
                       GitHub
                     </div>
-                    <div className="text-[14px] font-semibold text-[var(--text-primary)]">
+                    <div className="text-[14px] font-semibold text-[var(--text-primary)] break-all">
                       github.com/NITHINradarapu
                     </div>
                   </div>
@@ -178,7 +178,7 @@ export default function About() {
                     <div className="text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">
                       LinkedIn
                     </div>
-                    <div className="text-[14px] font-semibold text-[var(--text-primary)]">
+                    <div className="text-[14px] font-semibold text-[var(--text-primary)] break-all">
                       https://www.linkedin.com/in/nithin-radarapu05/
                     </div>
                   </div>
