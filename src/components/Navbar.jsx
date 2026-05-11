@@ -80,6 +80,16 @@ export default function Navbar({ linkCount }) {
             </button>
           )}
 
+          <button
+            onClick={() => navigate('/about')}
+            className="flex items-center justify-center p-2 rounded-lg text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-3)] transition-all duration-200"
+            title="About Developer"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+
           {/* Logout Button */}
           <button
             onClick={async () => {

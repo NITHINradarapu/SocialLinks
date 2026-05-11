@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getProfileFromFirestore } from '../services/profileService';
+import { getProfileFromFirestore, getUidByUsername } from '../services/profileService';
 import { getLinksFromFirestore } from '../services/linkService';
 import { getPlatformIcon, getPlatformColor, getPlatformCategory } from '../utils/platformIcons';
 
@@ -49,7 +49,7 @@ function PublicLinkCard({ link, index }) {
 }
 
 export default function PublicProfile() {
-  const { uid } = useParams();
+  const { username, uid: uidParam } = useParams();
   const [profile, setProfile] = useState(null);
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -59,15 +59,27 @@ export default function PublicProfile() {
     async function fetchData() {
       try {
         setLoading(true);
+        let resolvedUid = uidParam;
+        
+        // If we have a username, resolve it to a UID
+        if (username) {
+          resolvedUid = await getUidByUsername(username);
+        }
+        
+        if (!resolvedUid) {
+          setError(true);
+          setLoading(false);
+          return;
+        }
+
         const [profileData, linksData] = await Promise.all([
-          getProfileFromFirestore(uid),
-          getLinksFromFirestore(uid)
+          getProfileFromFirestore(resolvedUid),
+          getLinksFromFirestore(resolvedUid)
         ]);
         
         if (profileData) {
           setProfile(profileData);
         } else {
-          // If no profile exists for this UID
           setProfile({ name: 'User', bio: 'No bio provided', avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=fallback' });
         }
         setLinks(linksData || []);
@@ -78,8 +90,8 @@ export default function PublicProfile() {
         setLoading(false);
       }
     }
-    if (uid) fetchData();
-  }, [uid]);
+    fetchData();
+  }, [username, uidParam]);
 
   if (loading) {
     return (

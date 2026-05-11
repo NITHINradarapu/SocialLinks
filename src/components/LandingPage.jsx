@@ -88,9 +88,15 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="relative z-10 py-8 text-center border-t border-[var(--border)] mt-auto">
-        <p className="text-sm text-[var(--text-tertiary)]">
+        <p className="text-sm text-[var(--text-tertiary)] mb-2">
           © {new Date().getFullYear()} LinkHub. Designed with <span className="text-[var(--accent)]">♥</span>.
         </p>
+        <button 
+          onClick={() => navigate('/about')}
+          className="text-xs font-semibold text-[var(--text-tertiary)] hover:text-[var(--accent)] transition-colors"
+        >
+          About the Developer
+        </button>
       </footer>
     </div>
   );
