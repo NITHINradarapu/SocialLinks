@@ -12,6 +12,7 @@ import ThemeSwitcher from "./components/ThemeSwitcher";
 import Login from "./components/Login";
 import LandingPage from "./components/LandingPage";
 import NotFound from "./components/NotFound";
+import About from "./components/About";
 import { Toaster } from "react-hot-toast";
 
 export default function App() {
@@ -24,7 +25,7 @@ export default function App() {
   const isPublicProfile = location.pathname.startsWith("/p/");
   const isLoginPage = location.pathname === "/login";
   const isLandingPage = location.pathname === "/" && !user;
-  const isKnownPath = ["/", "/add", "/login"].includes(location.pathname) || isPublicProfile;
+  const isKnownPath = ["/", "/add", "/login", "/about"].includes(location.pathname) || isPublicProfile;
   const hideLayout = isPublicProfile || isLoginPage || isLandingPage || !isKnownPath;
 
   if (loading || (!isPublicProfile && user && loadingLinks) || (!isPublicProfile && user && loadingProfile)) {
@@ -97,6 +98,7 @@ export default function App() {
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
           <Route path="/p/:uid" element={<PublicProfile />} />
           <Route path="/:username" element={<PublicProfile />} />
+          <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
