@@ -13,6 +13,7 @@ import Login from "./components/Login";
 import LandingPage from "./components/LandingPage";
 import NotFound from "./components/NotFound";
 import About from "./components/About";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
 
 export default function App() {
@@ -71,7 +72,7 @@ export default function App() {
             path="/"
             element={
               user ? (
-                <>
+                <ProtectedRoute>
                   <ProfileHeader profile={profile} onUpdate={updateProfile} />
                   <LinkList
                     links={links}
@@ -79,7 +80,7 @@ export default function App() {
                     onEdit={updateLink}
                     onReorder={reorderLinks}
                   />
-                </>
+                </ProtectedRoute>
               ) : (
                 <LandingPage />
               )
@@ -88,11 +89,9 @@ export default function App() {
           <Route
             path="/add"
             element={
-              user ? (
+              <ProtectedRoute>
                 <AddLink onAdd={addLink} links={links} />
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              </ProtectedRoute>
             }
           />
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />

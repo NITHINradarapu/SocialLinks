@@ -164,8 +164,19 @@ export default function ProfileHeader({ profile, onUpdate }) {
           </div>
 
           <div>
-            <label className="text-[11px] font-semibold mb-1 block" style={{ color: 'var(--text-tertiary)' }}>
-              Username {usernameStatus === 'loading' && <span className="animate-pulse">...</span>}
+            <label className="text-[11px] font-semibold mb-1 flex items-center gap-2" style={{ color: 'var(--text-tertiary)' }}>
+              Username 
+              <span 
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider"
+                style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', border: '0.5px solid rgba(245, 158, 11, 0.3)' }}
+                title="This feature is in experimental phase and may contain bugs."
+              >
+                <svg className="w-2 h-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                </svg>
+                Experimental
+              </span>
+              {usernameStatus === 'loading' && <span className="animate-pulse">...</span>}
             </label>
             <div className="relative">
               <input

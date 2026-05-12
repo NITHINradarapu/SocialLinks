@@ -60,7 +60,7 @@ export default function Navbar({ linkCount }) {
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
               </svg>
-              Add Link
+              <span className="hidden sm:block">Add Link</span>
             </button>
           ) : (
             <button
@@ -76,7 +76,7 @@ export default function Navbar({ linkCount }) {
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              Dashboard
+              <span className="hidden sm:block">Dashboard</span>
             </button>
           )}
 
