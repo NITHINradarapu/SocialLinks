@@ -35,11 +35,11 @@ function PublicLinkCard({ link, index }) {
           {icon}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[15px] font-semibold text-center group-hover:text-[var(--accent-bright)] transition-colors" style={{ color: 'var(--text-primary)' }}>
+          <p className="text-[15px] font-semibold text-left group-hover:text-[var(--accent-bright)] transition-colors" style={{ color: 'var(--text-primary)' }}>
             {link.platform}
           </p>
         </div>
-        <div className="w-12 h-12 shrink-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: colors.text }}>
+        <div className="w-12 h-12 shrink-0 flex items-center justify-center opacity-60 sm:opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: colors.text }}>
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
           </svg>

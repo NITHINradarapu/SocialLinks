@@ -4,9 +4,9 @@ export default function About() {
   const navigate = useNavigate();
 
   return (
-    <div className="max-w-2xl mx-auto py-12 px-6 animate-fade-in-up">
+    <div className="max-w-2xl mx-auto py-8 sm:py-12 px-4 sm:px-6 animate-fade-in-up">
       <div
-        className="p-8 rounded-3xl relative overflow-hidden"
+        className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl relative overflow-hidden"
         style={{
           background: "var(--glass)",
           border: "1px solid var(--glass-border)",
@@ -95,13 +95,13 @@ export default function About() {
               <div className="grid gap-3">
                 <a
                   href="mailto:contact@nithin.dev"
-                  className="flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:translate-x-1 group"
+                  className="flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl transition-all duration-300 hover:translate-x-1 group"
                   style={{
                     background: "var(--surface-1)",
                     border: "1px solid var(--border)",
                   }}
                 >
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[var(--surface-2)] text-[var(--accent)] group-hover:scale-110 transition-transform">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center bg-[var(--surface-2)] text-[var(--accent)] group-hover:scale-110 transition-transform shrink-0">
                     <svg
                       className="w-5 h-5"
                       fill="none"
@@ -130,13 +130,13 @@ export default function About() {
                   href="https://github.com/NITHINradarapu"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:translate-x-1 group"
+                  className="flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl transition-all duration-300 hover:translate-x-1 group"
                   style={{
                     background: "var(--surface-1)",
                     border: "1px solid var(--border)",
                   }}
                 >
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[var(--surface-2)] text-[var(--text-primary)] group-hover:scale-110 transition-transform">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center bg-[var(--surface-2)] text-[var(--text-primary)] group-hover:scale-110 transition-transform shrink-0">
                     <svg
                       className="w-5 h-5"
                       fill="currentColor"
@@ -159,13 +159,13 @@ export default function About() {
                   href="https://www.linkedin.com/in/nithin-radarapu05/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 hover:translate-x-1 group"
+                  className="flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl transition-all duration-300 hover:translate-x-1 group"
                   style={{
                     background: "var(--surface-1)",
                     border: "1px solid var(--border)",
                   }}
                 >
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[var(--surface-2)] text-[#0077b5] group-hover:scale-110 transition-transform">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center bg-[var(--surface-2)] text-[#0077b5] group-hover:scale-110 transition-transform shrink-0">
                     <svg
                       className="w-5 h-5"
                       fill="currentColor"

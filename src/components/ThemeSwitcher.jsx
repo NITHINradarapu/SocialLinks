@@ -17,11 +17,11 @@ export default function ThemeSwitcher({ mode, setMode, accentKey, setAccentKey }
   }, [isOpen]);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50" ref={menuRef}>
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50" ref={menuRef}>
       {/* Menu Panel */}
       {isOpen && (
         <div 
-          className="absolute bottom-14 right-0 w-64 p-4 rounded-2xl shadow-xl animate-fade-in-up"
+          className="absolute bottom-14 right-0 w-56 sm:w-64 p-3.5 sm:p-4 rounded-2xl shadow-xl animate-fade-in-up"
           style={{ 
             background: 'var(--surface-1)', 
             border: '1px solid var(--border)',
