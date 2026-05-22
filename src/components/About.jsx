@@ -42,10 +42,10 @@ export default function About() {
 
           <div className="flex flex-col items-center text-center mb-10">
             <div
-              className="w-24 h-24 rounded-2xl mb-6 flex items-center justify-center p-1"
+              className="w-24 h-24 rounded-2xl mb-6 flex items-center justify-center p-1 shadow-lg"
               style={{
                 background:
-                  "linear-gradient(135deg, var(--accent), var(--accent-dim)) shadow-lg",
+                  "linear-gradient(135deg, var(--accent), var(--accent-dim))",
               }}
             >
               <div className="w-full h-full rounded-xl overflow-hidden bg-[var(--surface-2)]">

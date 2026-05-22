@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { toast } from 'react-hot-toast';
 import { useAuth } from './useAuth';
 import { 
   getLinksFromFirestore, 
@@ -11,6 +12,7 @@ import {
 export function useLinks() {
   const [links, setLinks] = useState([]);
   const [loadingLinks, setLoadingLinks] = useState(true);
+  const [linksError, setLinksError] = useState(null);
   const { user } = useAuth();
 
   // Fetch links from Firestore on mount or when user changes
@@ -19,14 +21,17 @@ export function useLinks() {
       if (!user) {
         setLinks([]);
         setLoadingLinks(false);
+        setLinksError(null);
         return;
       }
       try {
         setLoadingLinks(true);
+        setLinksError(null);
         const data = await getLinksFromFirestore(user.uid);
         setLinks(data);
       } catch (error) {
         console.error("Failed to load links:", error);
+        setLinksError(error);
       } finally {
         setLoadingLinks(false);
       }
@@ -41,7 +46,7 @@ export function useLinks() {
       url: url.trim(),
       category: category || 'Other',
       createdAt: Date.now(),
-      order: links.length // Append to end
+      order: links.length > 0 ? Math.max(...links.map(l => l.order ?? 0)) + 1 : 0
     };
 
     try {
@@ -49,10 +54,13 @@ export function useLinks() {
       const docId = await addLinkToFirestore(user.uid, newLink);
       // Update local state with the Firestore ID
       setLinks((prev) => [...prev, { id: docId, ...newLink }]);
+      return docId;
     } catch (error) {
       console.error("Failed to add link:", error);
+      toast.error('Failed to add link. Please try again.');
+      throw error;
     }
-  }, [user, links.length]);
+  }, [user, links]);
 
   const updateLink = useCallback(async (id, platform, url, category) => {
     if (!user) return;
@@ -61,6 +69,9 @@ export function useLinks() {
       url: url.trim(),
       category: category || 'Other'
     };
+
+    // Snapshot current state for rollback on failure
+    const previousLinks = links;
 
     // Optimistic UI update
     setLinks((prev) =>
@@ -71,30 +82,43 @@ export function useLinks() {
       await updateLinkInFirestore(user.uid, id, updatedData);
     } catch (error) {
       console.error("Failed to update link:", error);
-      // Ideally, revert local state here if it fails
+      // Rollback to previous state
+      setLinks(previousLinks);
+      toast.error('Failed to update link. Please try again.');
+      throw error;
     }
-  }, [user]);
+  }, [user, links]);
 
   const reorderLinks = useCallback(async (fromIndex, toIndex) => {
     if (!user) return;
     
-    // Optimistic UI update
-    setLinks((prev) => {
-      const result = Array.from(prev);
-      const [removed] = result.splice(fromIndex, 1);
-      result.splice(toIndex, 0, removed);
-      
-      // Fire-and-forget the batch update to Firestore
-      updateLinksOrderInFirestore(user.uid, result).catch(err => {
-        console.error("Failed to reorder in Firestore:", err);
-      });
-
-      return result;
-    });
-  }, [user]);
+    const previousLinks = links;
+    
+    const reordered = Array.from(links);
+    const [removed] = reordered.splice(fromIndex, 1);
+    reordered.splice(toIndex, 0, removed);
+    
+    const updatedLinks = reordered.map((link, idx) => ({
+      ...link,
+      order: idx
+    }));
+    
+    setLinks(updatedLinks);
+    
+    try {
+      await updateLinksOrderInFirestore(user.uid, updatedLinks);
+    } catch (err) {
+      console.error("Failed to reorder links in Firestore:", err);
+      setLinks(previousLinks);
+      toast.error("Failed to update links order. Please try again.");
+    }
+  }, [user, links]);
 
   const deleteLink = useCallback(async (id) => {
     if (!user) return;
+
+    // Snapshot current state for rollback on failure
+    const previousLinks = links;
 
     // Optimistic UI update
     setLinks((prev) => prev.filter((link) => link.id !== id));
@@ -103,8 +127,12 @@ export function useLinks() {
       await deleteLinkFromFirestore(user.uid, id);
     } catch (error) {
       console.error("Failed to delete link:", error);
+      // Rollback to previous state
+      setLinks(previousLinks);
+      toast.error('Failed to delete link. Please try again.');
+      throw error;
     }
-  }, [user]);
+  }, [user, links]);
 
-  return { links, loadingLinks, addLink, updateLink, deleteLink, reorderLinks };
+  return { links, loadingLinks, linksError, addLink, updateLink, deleteLink, reorderLinks };
 }

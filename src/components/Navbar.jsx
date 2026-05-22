@@ -1,16 +1,19 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { logOut } from '../services/authService';
+import { toast } from 'react-hot-toast';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Navbar({ linkCount }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const isHome = location.pathname === '/';
 
   return (
     <nav
       className="sticky top-0 z-50 backdrop-blur-2xl"
       style={{
-        background: 'rgba(10, 14, 26, 0.75)',
+        background: 'var(--nav-bg)',
         borderBottom: '1px solid var(--glass-border)',
       }}
     >
@@ -91,18 +94,26 @@ export default function Navbar({ linkCount }) {
           </button>
 
           {/* Logout Button */}
-          <button
-            onClick={async () => {
-              await logOut();
-              navigate('/login');
-            }}
-            className="flex items-center justify-center p-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors duration-200"
-            title="Log Out"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-          </button>
+          {user && (
+            <button
+              onClick={async () => {
+                try {
+                  await logOut();
+                  navigate('/login');
+                  toast.success('Logged out successfully');
+                } catch (error) {
+                  console.error("Logout failed:", error);
+                  toast.error('Failed to log out. Please try again.');
+                }
+              }}
+              className="flex items-center justify-center p-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors duration-200"
+              title="Log Out"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
     </nav>

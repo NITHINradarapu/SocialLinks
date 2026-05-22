@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export function useDragReorder(items, onReorder) {
+export function useDragReorder(onReorder) {
   const [dragIndex, setDragIndex] = useState(null);
   const [overIndex, setOverIndex] = useState(null);
 

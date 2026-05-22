@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { getProfileFromFirestore, getUidByUsername } from '../services/profileService';
 import { getLinksFromFirestore } from '../services/linkService';
 import { getPlatformIcon, getPlatformColor, getPlatformCategory } from '../utils/platformIcons';
+import NotFound from './NotFound';
 
 function PublicLinkCard({ link, index }) {
   const colors = getPlatformColor(link.platform);
@@ -93,6 +94,15 @@ export default function PublicProfile() {
     fetchData();
   }, [username, uidParam]);
 
+  useEffect(() => {
+    if (!profile) return;
+    const defaultTitle = "Link Hub — Your Premium Link-in-Bio Dashboard";
+    document.title = `${profile.name} (@${username || 'profile'}) | LinkHub`;
+    return () => {
+      document.title = defaultTitle;
+    };
+  }, [profile, username]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -102,12 +112,9 @@ export default function PublicProfile() {
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-center px-4" style={{ color: 'var(--text-primary)' }}>
-        <h1 className="text-2xl font-bold mb-2">User Not Found</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>The profile you are looking for does not exist.</p>
-      </div>
-    );
+    // Render the proper NotFound page — this handles the case where /:username
+    // matches a path that isn't a real user (e.g. /faq, /settings, etc.)
+    return <NotFound />;
   }
 
   const groupedLinks = links.reduce((acc, link) => {

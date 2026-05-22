@@ -25,7 +25,7 @@ export const updateProfileInFirestore = async (uid, profileData) => {
   }
 };
 
-export const RESERVED_USERNAMES = ['login', 'add', 'p', 'admin', 'dashboard', 'settings', 'profile', 'api', 'help', 'static', 'assets'];
+export const RESERVED_USERNAMES = ['login', 'add', 'p', 'admin', 'dashboard', 'settings', 'profile', 'api', 'help', 'static', 'assets', 'about'];
 
 export const checkUsernameAvailability = async (username) => {
   if (!username || username.length < 3) return false;
@@ -38,8 +38,21 @@ export const checkUsernameAvailability = async (username) => {
 };
 
 export const claimUsername = async (uid, username, oldUsername = null) => {
-  const usernameLower = username.toLowerCase();
   const batch = writeBatch(db);
+  
+  if (!username) {
+    // We are clearing the username
+    if (oldUsername) {
+      const oldUsernameRef = doc(db, "usernames", oldUsername.toLowerCase());
+      batch.delete(oldUsernameRef);
+    }
+    const userRef = doc(db, "users", uid);
+    batch.set(userRef, { profile: { username: null } }, { merge: true });
+    await batch.commit();
+    return;
+  }
+
+  const usernameLower = username.toLowerCase();
   
   // 1. Add to usernames collection
   const usernameRef = doc(db, "usernames", usernameLower);

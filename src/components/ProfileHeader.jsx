@@ -21,6 +21,7 @@ const PREDEFINED_AVATARS = [
 export default function ProfileHeader({ profile, onUpdate }) {
   const { user } = useAuth();
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [editName, setEditName] = useState(profile.name);
   const [editBio, setEditBio] = useState(profile.bio);
   const [editAvatar, setEditAvatar] = useState(profile.avatar);
@@ -33,11 +34,16 @@ export default function ProfileHeader({ profile, onUpdate }) {
   }, [editing]);
 
   useEffect(() => {
+    if (!editing) return;
+
+    const cleanUsername = editUsername.trim().toLowerCase();
+
     const check = async () => {
-      if (!editing) return;
-      
-      const cleanUsername = editUsername.trim().toLowerCase();
-      
+      if (cleanUsername === '') {
+        setUsernameStatus('available');
+        return;
+      }
+
       if (cleanUsername === (profile.username || '').toLowerCase()) {
         setUsernameStatus('idle');
         return;
@@ -59,11 +65,17 @@ export default function ProfileHeader({ profile, onUpdate }) {
       }
 
       setUsernameStatus('loading');
-      const available = await checkUsernameAvailability(cleanUsername);
-      setUsernameStatus(available ? 'available' : 'unavailable');
+      try {
+        const available = await checkUsernameAvailability(cleanUsername);
+        setUsernameStatus(available ? 'available' : 'unavailable');
+      } catch (err) {
+        console.error("Error checking username availability:", err);
+        setUsernameStatus('error');
+        toast.error('Error checking username availability. Check your Firestore rules.');
+      }
     };
 
-    const timer = setTimeout(check, 500);
+    const timer = setTimeout(check, cleanUsername === '' ? 0 : 500);
     return () => clearTimeout(timer);
   }, [editUsername, editing, profile.username]);
 
@@ -73,6 +85,7 @@ export default function ProfileHeader({ profile, onUpdate }) {
     setEditAvatar(profile.avatar);
     setEditUsername(profile.username || '');
     setUsernameStatus('idle');
+    setSaving(false);
     setEditing(true);
   };
 
@@ -85,22 +98,34 @@ export default function ProfileHeader({ profile, onUpdate }) {
         toast.error('Please choose a valid and available username');
         return;
       }
+      setSaving(true);
       try {
         await claimUsername(user.uid, cleanUsername, profile.username);
       } catch (err) {
+        console.error("Failed to claim username:", err);
         toast.error('Failed to claim username');
+        setSaving(false);
         return;
       }
+    } else {
+      setSaving(true);
     }
 
-    onUpdate({ 
-      name: editName.trim(), 
-      bio: editBio.trim(), 
-      avatar: editAvatar,
-      username: cleanUsername 
-    });
-    setEditing(false);
-    toast.success('Profile saved!');
+    try {
+      await onUpdate({ 
+        name: editName.trim(), 
+        bio: editBio.trim(), 
+        avatar: editAvatar,
+        username: cleanUsername || null 
+      });
+      setEditing(false);
+      toast.success('Profile saved!');
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+      toast.error('Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleShare = async () => {
@@ -127,11 +152,14 @@ export default function ProfileHeader({ profile, onUpdate }) {
                 <button
                   key={av.name}
                   onClick={() => setEditAvatar(av.url)}
+                  disabled={saving}
                   className="w-12 h-12 rounded-full border-2 transition-all"
                   style={{ 
                     borderColor: editAvatar === av.url ? 'var(--accent)' : 'transparent',
                     background: 'var(--surface-2)',
-                    padding: '2px'
+                    padding: '2px',
+                    opacity: saving ? 0.5 : 1,
+                    cursor: saving ? 'not-allowed' : 'pointer'
                   }}
                 >
                   <img src={av.url} alt={av.name} className="w-full h-full rounded-full" />
@@ -147,8 +175,10 @@ export default function ProfileHeader({ profile, onUpdate }) {
               type="text"
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
+              disabled={saving}
               placeholder="Your Name"
               className="w-full"
+              style={{ opacity: saving ? 0.7 : 1, cursor: saving ? 'not-allowed' : 'text' }}
             />
           </div>
 
@@ -158,8 +188,10 @@ export default function ProfileHeader({ profile, onUpdate }) {
               type="text"
               value={editBio}
               onChange={(e) => setEditBio(e.target.value)}
+              disabled={saving}
               placeholder="Short bio..."
               className="w-full"
+              style={{ opacity: saving ? 0.7 : 1, cursor: saving ? 'not-allowed' : 'text' }}
             />
           </div>
 
@@ -183,16 +215,19 @@ export default function ProfileHeader({ profile, onUpdate }) {
                 type="text"
                 value={editUsername}
                 onChange={(e) => setEditUsername(e.target.value)}
+                disabled={saving}
                 placeholder="username"
                 className={`w-full ${
                   usernameStatus === 'available' ? 'border-green-500/50' : 
-                  usernameStatus === 'unavailable' || usernameStatus === 'invalid' ? 'border-red-500/50' : ''
+                  usernameStatus === 'unavailable' || usernameStatus === 'invalid' || usernameStatus === 'error' ? 'border-red-500/50' : ''
                 }`}
+                style={{ opacity: saving ? 0.7 : 1, cursor: saving ? 'not-allowed' : 'text' }}
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wider">
                 {usernameStatus === 'available' && <span className="text-green-500">Available</span>}
                 {usernameStatus === 'unavailable' && <span className="text-red-500">Taken</span>}
                 {usernameStatus === 'invalid' && <span className="text-red-500">Min 3 chars (a-z, 0-9, _)</span>}
+                {usernameStatus === 'error' && <span className="text-red-500">Query Error</span>}
               </div>
             </div>
             <p className="text-[10px] mt-1.5 text-[var(--text-tertiary)]">
@@ -203,15 +238,32 @@ export default function ProfileHeader({ profile, onUpdate }) {
           <div className="flex gap-2 mt-2">
             <button
               onClick={handleEditSave}
-              className="flex-1 py-2 rounded-lg text-[13px] font-semibold cursor-pointer transition-all duration-200"
-              style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-dim))', color: '#fff' }}
+              disabled={saving}
+              className="flex-1 py-2 rounded-lg text-[13px] font-semibold cursor-pointer transition-all duration-200 flex items-center justify-center gap-2"
+              style={{ 
+                background: 'linear-gradient(135deg, var(--accent), var(--accent-dim))', 
+                color: '#fff',
+                opacity: saving ? 0.7 : 1,
+                cursor: saving ? 'not-allowed' : 'pointer'
+              }}
             >
-              Save Profile
+              {saving ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Saving...
+                </>
+              ) : 'Save Profile'}
             </button>
             <button
               onClick={() => setEditing(false)}
+              disabled={saving}
               className="px-5 py-2 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-200"
-              style={{ background: 'var(--surface-3)', color: 'var(--text-secondary)' }}
+              style={{ 
+                background: 'var(--surface-3)', 
+                color: 'var(--text-secondary)',
+                opacity: saving ? 0.5 : 1,
+                cursor: saving ? 'not-allowed' : 'pointer'
+              }}
             >
               Cancel
             </button>
