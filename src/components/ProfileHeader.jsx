@@ -217,19 +217,35 @@ export default function ProfileHeader({ profile, onUpdate }) {
                 onChange={(e) => setEditUsername(e.target.value)}
                 disabled={saving}
                 placeholder="username"
-                className={`w-full ${
+                className={`w-full pr-10 ${
                   usernameStatus === 'available' ? 'border-green-500/50' : 
                   usernameStatus === 'unavailable' || usernameStatus === 'invalid' || usernameStatus === 'error' ? 'border-red-500/50' : ''
                 }`}
                 style={{ opacity: saving ? 0.7 : 1, cursor: saving ? 'not-allowed' : 'text' }}
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wider">
-                {usernameStatus === 'available' && <span className="text-green-500">Available</span>}
-                {usernameStatus === 'unavailable' && <span className="text-red-500">Taken</span>}
-                {usernameStatus === 'invalid' && <span className="text-red-500">Min 3 chars (a-z, 0-9, _)</span>}
-                {usernameStatus === 'error' && <span className="text-red-500">Query Error</span>}
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+                {usernameStatus === 'available' && (
+                  <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+                {(usernameStatus === 'unavailable' || usernameStatus === 'invalid' || usernameStatus === 'error') && (
+                  <svg className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                )}
               </div>
             </div>
+            {usernameStatus !== 'idle' && usernameStatus !== 'loading' && (
+              <p className={`text-[10px] mt-1 font-semibold ${
+                usernameStatus === 'available' ? 'text-green-500' : 'text-red-500'
+              }`}>
+                {usernameStatus === 'available' && 'Username is available!'}
+                {usernameStatus === 'unavailable' && 'Username is already taken.'}
+                {usernameStatus === 'invalid' && 'Username must be at least 3 characters and contain only letters, numbers, or underscores.'}
+                {usernameStatus === 'error' && 'Error validating username.'}
+              </p>
+            )}
             <p className="text-[10px] mt-1.5 text-[var(--text-tertiary)]">
               Your profile will be at: <span className="text-[var(--accent)]">{window.location.origin}/{editUsername || 'username'}</span>
             </p>
@@ -291,7 +307,7 @@ export default function ProfileHeader({ profile, onUpdate }) {
             href={profile.username ? `/${profile.username}` : `/p/${user?.uid}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[12px] font-medium hover:underline transition-colors"
+            className="text-[12px] font-medium hover:underline transition-colors truncate block max-w-[180px] xs:max-w-[240px] sm:max-w-none"
             style={{ color: 'var(--accent)' }}
           >
             {window.location.host}{profile.username ? `/${profile.username}` : `/p/${user?.uid?.slice(0, 8)}...`}

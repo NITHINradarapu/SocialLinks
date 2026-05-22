@@ -230,7 +230,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               >
                 Cancel
               </button>
-              <span className="text-[10px] ml-auto" style={{ color: 'var(--text-tertiary)' }}>
+              <span className="text-[10px] ml-auto hidden sm:inline" style={{ color: 'var(--text-tertiary)' }}>
                 <kbd className="px-1 py-0.5 rounded text-[10px] font-mono" style={{ background: 'var(--surface-3)', color: 'var(--accent-bright)', border: '1px solid var(--border)' }}>Enter</kbd> save · <kbd className="px-1 py-0.5 rounded text-[10px] font-mono" style={{ background: 'var(--surface-3)', color: 'var(--accent-bright)', border: '1px solid var(--border)' }}>Esc</kbd> cancel
               </span>
             </div>
@@ -336,14 +336,20 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
                 onClick={handleDelete}
                 className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-semibold cursor-pointer transition-all bg-[var(--danger)] text-white hover:brightness-110 active:scale-95 border-none"
               >
-                Delete
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="hidden sm:inline">Delete</span>
               </button>
               <button
                 id={`cancel-delete-${link.id}`}
                 onClick={() => setConfirmDelete(false)}
                 className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-medium cursor-pointer transition-all border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-3)] active:scale-95 bg-transparent"
               >
-                Cancel
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span className="hidden sm:inline">Cancel</span>
               </button>
             </div>
           ) : (
@@ -363,14 +369,14 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
                     <svg className="w-3 h-3 animate-copied-pop" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
-                    Copied!
+                    <span className="hidden sm:inline">Copied!</span>
                   </>
                 ) : (
                   <>
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
-                    Copy
+                    <span className="hidden sm:inline">Copy</span>
                   </>
                 )}
               </button>
@@ -396,7 +402,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                Edit
+                <span className="hidden sm:inline">Edit</span>
               </button>
 
               <button
@@ -420,7 +426,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
-                Delete
+                <span className="hidden sm:inline">Delete</span>
               </button>
             </>
           )}
