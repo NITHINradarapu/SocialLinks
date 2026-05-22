@@ -7,6 +7,7 @@ export default function AddLink({ onAdd, links = [] }) {
   const [platform, setPlatform] = useState('');
   const [url, setUrl] = useState('');
   const [category, setCategory] = useState('Other');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const platformRef = useRef(null);
   const navigate = useNavigate();
 
@@ -17,18 +18,26 @@ export default function AddLink({ onAdd, links = [] }) {
     catch { return false; }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const p = platform.trim(), u = url.trim();
     if (!p) return toast.error('Enter a platform name.');
     if (!u) return toast.error('Enter a URL.');
     if (!validateUrl(u)) return toast.error('Enter a valid URL (e.g. https://github.com/user).');
     
-    onAdd(p, u, category);
-    setPlatform('');
-    setUrl('');
-    setCategory('Other');
-    toast.success('Link added successfully!');
+    setIsSubmitting(true);
+    try {
+      await onAdd(p, u, category);
+      setPlatform('');
+      setUrl('');
+      setCategory('Other');
+      toast.success('Link added successfully!');
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const presets = [
@@ -83,11 +92,14 @@ export default function AddLink({ onAdd, links = [] }) {
                   id={`preset-${p.name.toLowerCase()}`}
                   type="button"
                   onClick={() => selectPreset(p)}
+                  disabled={isSubmitting}
                   className="px-3 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all duration-150 active:scale-95"
                   style={{
                     background: platform === p.name ? 'var(--accent)' : 'var(--surface-2)',
                     color: platform === p.name ? '#fff' : 'var(--text-secondary)',
                     border: `1px solid ${platform === p.name ? 'var(--accent)' : 'var(--border)'}`,
+                    opacity: isSubmitting ? 0.5 : 1,
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer'
                   }}
                 >
                   {p.name}
@@ -115,7 +127,9 @@ export default function AddLink({ onAdd, links = [] }) {
                   setPlatform(val); 
                   setCategory(getPlatformCategory(val));
                 }}
+                disabled={isSubmitting}
                 placeholder="e.g., GitHub"
+                style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'text' }}
               />
             </div>
 
@@ -128,12 +142,15 @@ export default function AddLink({ onAdd, links = [] }) {
                 list="category-suggestions"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
+                disabled={isSubmitting}
                 placeholder="Select or type a category"
                 className="w-full rounded-lg px-3 py-2 text-[13px] outline-none transition-all duration-200"
                 style={{
                   background: 'var(--surface-2)',
                   color: 'var(--text-primary)',
-                  border: '1px solid var(--border)'
+                  border: '1px solid var(--border)',
+                  opacity: isSubmitting ? 0.7 : 1,
+                  cursor: isSubmitting ? 'not-allowed' : 'text'
                 }}
               />
               <datalist id="category-suggestions">
@@ -152,7 +169,9 @@ export default function AddLink({ onAdd, links = [] }) {
                 type="text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
+                disabled={isSubmitting}
                 placeholder={presets.find(x => x.name === platform)?.ph || 'https://example.com/profile'}
+                style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'text' }}
               />
             </div>
 
@@ -162,27 +181,42 @@ export default function AddLink({ onAdd, links = [] }) {
               <button
                 id="add-link-submit"
                 type="submit"
+                disabled={isSubmitting}
                 className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-[13px] font-semibold cursor-pointer transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
                 style={{
                   background: 'linear-gradient(135deg, var(--accent), var(--accent-dim))',
                   color: '#fff',
                   border: 'none',
+                  opacity: isSubmitting ? 0.7 : 1,
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer'
                 }}
               >
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                Add Link
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Adding...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Link
+                  </>
+                )}
               </button>
               <button
                 id="add-link-cancel"
                 type="button"
                 onClick={() => navigate('/')}
+                disabled={isSubmitting}
                 className="px-5 py-2.5 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-200 active:scale-[0.98]"
                 style={{
                   background: 'var(--surface-2)',
                   color: 'var(--text-secondary)',
                   border: '1px solid var(--border)',
+                  opacity: isSubmitting ? 0.5 : 1,
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer'
                 }}
               >
                 Cancel

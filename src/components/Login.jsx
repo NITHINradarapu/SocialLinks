@@ -1,13 +1,15 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { signInWithGoogle } from "../services/authService";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogin = async () => {
     try {
       await signInWithGoogle();
-      navigate("/");
+      const from = location.state?.from?.pathname || "/";
+      navigate(from, { replace: true });
     } catch (error) {
       console.error("Login failed", error);
     }

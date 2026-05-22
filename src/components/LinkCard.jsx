@@ -6,6 +6,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
   const [copied, setCopied] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [editPlatform, setEditPlatform] = useState(link.platform);
   const [editUrl, setEditUrl] = useState(link.url);
   const [editCategory, setEditCategory] = useState(link.category || getPlatformCategory(link.platform));
@@ -274,6 +275,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
           if (isDragging) return;
           e.currentTarget.style.borderColor = 'var(--border)';
           e.currentTarget.style.background = 'var(--surface-2)';
+          setConfirmDelete(false);
         }}
       >
         {/* Drag Handle */}
@@ -326,80 +328,102 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
 
         {/* Actions */}
         <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            id={`copy-${link.id}`}
-            onClick={handleCopy}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all duration-150 active:scale-95"
-            style={{
-              background: copied ? 'var(--success-bg)' : 'transparent',
-              color: copied ? 'var(--success)' : 'var(--text-secondary)',
-              border: `1px solid ${copied ? 'rgba(52,211,153,0.2)' : 'var(--border)'}`,
-            }}
-          >
-            {copied ? (
-              <>
-                <svg className="w-3 h-3 animate-copied-pop" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                Copied!
-              </>
-            ) : (
-              <>
+          {confirmDelete ? (
+            <div className="flex items-center gap-1.5 animate-fade-in">
+              <span className="text-[10px] font-bold text-[var(--danger)] mr-1 uppercase tracking-wider">Sure?</span>
+              <button
+                id={`confirm-delete-${link.id}`}
+                onClick={handleDelete}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-semibold cursor-pointer transition-all bg-[var(--danger)] text-white hover:brightness-110 active:scale-95 border-none"
+              >
+                Delete
+              </button>
+              <button
+                id={`cancel-delete-${link.id}`}
+                onClick={() => setConfirmDelete(false)}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-medium cursor-pointer transition-all border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-3)] active:scale-95 bg-transparent"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <>
+              <button
+                id={`copy-${link.id}`}
+                onClick={handleCopy}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all duration-150 active:scale-95"
+                style={{
+                  background: copied ? 'var(--success-bg)' : 'transparent',
+                  color: copied ? 'var(--success)' : 'var(--text-secondary)',
+                  border: `1px solid ${copied ? 'rgba(52,211,153,0.2)' : 'var(--border)'}`,
+                }}
+              >
+                {copied ? (
+                  <>
+                    <svg className="w-3 h-3 animate-copied-pop" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Copy
+                  </>
+                )}
+              </button>
+
+              <button
+                id={`edit-${link.id}`}
+                onClick={handleEditStart}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all duration-150 active:scale-95 opacity-50 hover:opacity-100"
+                style={{
+                  background: 'transparent',
+                  color: 'var(--accent-bright)',
+                  border: '1px solid transparent',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--accent-glow)';
+                  e.currentTarget.style.borderColor = 'rgba(129,140,248,0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'transparent';
+                }}
+              >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                Copy
-              </>
-            )}
-          </button>
+                Edit
+              </button>
 
-          <button
-            id={`edit-${link.id}`}
-            onClick={handleEditStart}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all duration-150 active:scale-95 opacity-50 hover:opacity-100"
-            style={{
-              background: 'transparent',
-              color: 'var(--accent-bright)',
-              border: '1px solid transparent',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--accent-glow)';
-              e.currentTarget.style.borderColor = 'rgba(129,140,248,0.15)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.borderColor = 'transparent';
-            }}
-          >
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            Edit
-          </button>
-
-          <button
-            id={`delete-${link.id}`}
-            onClick={handleDelete}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all duration-150 active:scale-95 opacity-50 hover:opacity-100"
-            style={{
-              background: 'transparent',
-              color: 'var(--danger)',
-              border: '1px solid transparent',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--danger-bg)';
-              e.currentTarget.style.borderColor = 'rgba(251,113,133,0.15)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.borderColor = 'transparent';
-            }}
-          >
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-            Delete
-          </button>
+              <button
+                id={`delete-${link.id}`}
+                onClick={() => setConfirmDelete(true)}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all duration-150 active:scale-95 opacity-50 hover:opacity-100"
+                style={{
+                  background: 'transparent',
+                  color: 'var(--danger)',
+                  border: '1px solid transparent',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--danger-bg)';
+                  e.currentTarget.style.borderColor = 'rgba(251,113,133,0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'transparent';
+                }}
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Delete
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

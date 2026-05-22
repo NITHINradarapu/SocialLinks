@@ -8,7 +8,7 @@ export default function LinkList({ links, onDelete, onEdit, onReorder }) {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const navigate = useNavigate();
-  const { dragIndex, overIndex, dragHandlers } = useDragReorder(links, onReorder);
+  const { dragIndex, overIndex, dragHandlers } = useDragReorder(onReorder);
 
   const filtered = links.filter((link) => {
     const q = search.toLowerCase();
