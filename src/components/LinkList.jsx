@@ -117,10 +117,10 @@ export default function LinkList({ links, onDelete, onEdit, onReorder }) {
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+            className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
               selectedCategory === cat 
                 ? 'shadow-sm' 
-                : 'bg-transparent border'
+                : 'bg-transparent'
             }`}
             style={{
               backgroundColor: selectedCategory === cat ? 'var(--accent)' : 'var(--surface-1)',

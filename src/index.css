@@ -84,9 +84,17 @@ body::before {
 ::selection { background: rgba(129, 140, 248, 0.25); color: #fff; }
 
 /* ── Focus ── */
+*:focus {
+  outline: none;
+}
 *:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* ── Buttons ── */
+button {
+  cursor: pointer;
 }
 
 /* ── Global Input ── */
@@ -147,3 +155,12 @@ input::placeholder {
 .animate-fade-in { animation: fadeIn 0.25s ease-out both; }
 .animate-slide-down { animation: slideDown 0.25s ease-out both; }
 .animate-copied-pop { animation: copiedPop 0.2s ease-out both; }
+
+/* ── Scrollbar Hide Utility ── */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;          /* Chrome, Safari, Opera */
+}

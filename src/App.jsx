@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useLinks } from "./hooks/useLinks";
 import { useProfile } from "./hooks/useProfile";
@@ -21,6 +22,40 @@ export default function App() {
   const { profile, loadingProfile, profileError, updateProfile } = useProfile();
   const { mode, setMode, accentKey, setAccentKey } = useTheme();
   const { user, loading } = useAuth();
+
+  // Sync Firestore profile theme settings to local state on load
+  useEffect(() => {
+    if (profile && !loadingProfile) {
+      if (profile.themeMode && profile.themeMode !== mode) {
+        setMode(profile.themeMode);
+      }
+      if (profile.themeAccent && profile.themeAccent !== accentKey) {
+        setAccentKey(profile.themeAccent);
+      }
+    }
+  }, [profile, loadingProfile, mode, accentKey, setMode, setAccentKey]);
+
+  const handleSetMode = async (newMode) => {
+    setMode(newMode);
+    if (user && profile && !loadingProfile) {
+      try {
+        await updateProfile({ themeMode: newMode });
+      } catch (err) {
+        console.error("Failed to sync theme mode to Firestore:", err);
+      }
+    }
+  };
+
+  const handleSetAccentKey = async (newAccentKey) => {
+    setAccentKey(newAccentKey);
+    if (user && profile && !loadingProfile) {
+      try {
+        await updateProfile({ themeAccent: newAccentKey });
+      } catch (err) {
+        console.error("Failed to sync theme accent to Firestore:", err);
+      }
+    }
+  };
 
   const location = useLocation();
   const isPublicProfile = location.pathname.startsWith("/p/");
@@ -139,9 +174,9 @@ export default function App() {
       {!hideLayout && (
         <ThemeSwitcher
           mode={mode}
-          setMode={setMode}
+          setMode={handleSetMode}
           accentKey={accentKey}
-          setAccentKey={setAccentKey}
+          setAccentKey={handleSetAccentKey}
         />
       )}
     </div>

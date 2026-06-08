@@ -75,18 +75,22 @@ export default function ThemeSwitcher({ mode, setMode, accentKey, setAccentKey }
                 <button
                   key={key}
                   onClick={() => setAccentKey(key)}
-                  className="w-8 h-8 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center"
+                  className="w-8 h-8 rounded-full border-2 transition-all hover:scale-110 flex items-center justify-center cursor-pointer bg-transparent"
                   style={{ 
-                    backgroundColor: accent.color,
-                    borderColor: accentKey === key ? 'var(--text-primary)' : 'transparent'
+                    borderColor: accentKey === key ? accent.color : 'transparent'
                   }}
                   title={accent.name}
                 >
-                  {accentKey === key && (
-                    <svg className="w-4 h-4 text-white drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
+                  <div 
+                    className="w-5.5 h-5.5 rounded-full flex items-center justify-center transition-transform" 
+                    style={{ backgroundColor: accent.color }}
+                  >
+                    {accentKey === key && (
+                      <svg className="w-3.5 h-3.5 text-white drop-shadow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
                 </button>
               ))}
             </div>

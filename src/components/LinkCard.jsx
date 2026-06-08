@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { getPlatformIcon, getPlatformColor, isKnownPlatform, CATEGORIES, getPlatformCategory } from '../utils/platformIcons';
+import { getPlatformIcon, getPlatformColor, isKnownPlatform, CATEGORIES, getPlatformCategory, getSafeUrl } from '../utils/platformIcons';
 import { toast } from 'react-hot-toast';
 
 export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, overIndex, dragHandlers, uniqueCategories = [] }) {
@@ -315,7 +315,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
             {link.platform}
           </p>
           <a
-            href={link.url}
+            href={getSafeUrl(link.url)}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[12px] leading-tight mt-0.5 block truncate hover:underline"

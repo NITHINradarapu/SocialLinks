@@ -170,3 +170,17 @@ export function getPlatformCategory(platformName) {
   }
   return 'Other';
 }
+
+export function getSafeUrl(url) {
+  if (!url) return '#';
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return url;
+    }
+  } catch {
+    // Return '#' for any invalid or unsafe protocol URLs (e.g. javascript:)
+  }
+  return '#';
+}
+
