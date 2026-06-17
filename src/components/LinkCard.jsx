@@ -106,9 +106,8 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
   
   let dragStyle = {};
   if (isDragging) {
-    dragStyle = { opacity: 0.4, transform: 'scale(0.98)' };
+    dragStyle = { opacity: 0.4, transform: 'scale(0.97)' };
   } else if (isOver && dragIndex !== null) {
-    // Show visual indicator line where it will be dropped
     if (dragIndex > index) {
       dragStyle = { borderTop: '2px solid var(--accent)', transform: 'translateY(2px)' };
     } else {
@@ -125,16 +124,17 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
         style={{ animationDelay: `${index * 50}ms` }}
       >
         <div
-          className="relative rounded-xl transition-all duration-200"
+          className="relative rounded-2xl transition-all duration-200"
           style={{
-            background: 'var(--surface-2)',
+            background: 'var(--glass)',
             border: '1px solid var(--accent)',
-            boxShadow: '0 0 0 3px var(--accent-glow)',
+            boxShadow: '0 0 0 3px var(--accent-glow), var(--shadow-md)',
+            backdropFilter: 'blur(12px)',
           }}
         >
           {/* Edit Header */}
           <div
-            className="flex items-center gap-2 px-4 py-2.5 rounded-t-xl"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-t-2xl"
             style={{
               background: 'var(--accent-glow)',
               borderBottom: '1px solid var(--border)',
@@ -151,7 +151,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
           {/* Edit Form */}
           <div className="p-4 flex flex-col gap-3">
             <div>
-              <label className="block text-[11px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>
+              <label className="block text-[11px] font-semibold mb-1 uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
                 Platform
               </label>
               <input
@@ -166,7 +166,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>
+              <label className="block text-[11px] font-semibold mb-1 uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
                 Category
               </label>
               <input
@@ -174,10 +174,11 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
                 list={`category-suggestions-${link.id}`}
                 value={editCategory}
                 onChange={(e) => setEditCategory(e.target.value)}
-                className="w-full text-[13px] rounded bg-transparent outline-none px-2 py-1.5"
+                className="w-full text-[13px] rounded-xl bg-transparent outline-none px-3 py-2.5"
                 style={{
                   color: 'var(--text-primary)',
-                  border: '1px solid var(--border)'
+                  border: '1.5px solid var(--border)',
+                  background: 'var(--surface-1)',
                 }}
               />
               <datalist id={`category-suggestions-${link.id}`}>
@@ -187,7 +188,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               </datalist>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>
+              <label className="block text-[11px] font-semibold mb-1 uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
                 URL
               </label>
               <input
@@ -206,11 +207,12 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               <button
                 id={`edit-save-${link.id}`}
                 onClick={handleEditSave}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-semibold cursor-pointer transition-all duration-200 hover:brightness-110 active:scale-[0.97]"
+                className="btn-shimmer flex items-center gap-1.5 px-4 py-2 rounded-xl text-[12px] font-semibold cursor-pointer transition-all duration-200 hover:shadow-lg active:scale-[0.97]"
                 style={{
                   background: 'linear-gradient(135deg, var(--accent), var(--accent-dim))',
                   color: '#fff',
                   border: 'none',
+                  boxShadow: '0 2px 8px var(--accent-glow)',
                 }}
               >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -221,7 +223,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               <button
                 id={`edit-cancel-${link.id}`}
                 onClick={handleEditCancel}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-[0.97]"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-[0.97]"
                 style={{
                   background: 'var(--surface-3)',
                   color: 'var(--text-secondary)',
@@ -231,7 +233,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
                 Cancel
               </button>
               <span className="text-[10px] ml-auto hidden sm:inline" style={{ color: 'var(--text-tertiary)' }}>
-                <kbd className="px-1 py-0.5 rounded text-[10px] font-mono" style={{ background: 'var(--surface-3)', color: 'var(--accent-bright)', border: '1px solid var(--border)' }}>Enter</kbd> save · <kbd className="px-1 py-0.5 rounded text-[10px] font-mono" style={{ background: 'var(--surface-3)', color: 'var(--accent-bright)', border: '1px solid var(--border)' }}>Esc</kbd> cancel
+                <kbd className="px-1.5 py-0.5 rounded-md text-[10px] font-mono" style={{ background: 'var(--surface-3)', color: 'var(--accent-bright)', border: '1px solid var(--border)' }}>Enter</kbd> save · <kbd className="px-1.5 py-0.5 rounded-md text-[10px] font-mono" style={{ background: 'var(--surface-3)', color: 'var(--accent-bright)', border: '1px solid var(--border)' }}>Esc</kbd> cancel
               </span>
             </div>
           </div>
@@ -248,8 +250,8 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
       style={{
         animationDelay: `${index * 50}ms`,
         opacity: deleting ? 0 : undefined,
-        transform: deleting ? 'scale(0.96) translateY(-4px)' : undefined,
-        transition: 'opacity 0.25s, transform 0.25s',
+        transform: deleting ? 'scale(0.95) translateY(-6px)' : undefined,
+        transition: 'opacity 0.3s ease, transform 0.3s ease',
       }}
       draggable={!!dragHandlers}
       onDragStart={(e) => dragHandlers?.onDragStart(e, index)}
@@ -260,27 +262,32 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
       onDragEnd={dragHandlers?.onDragEnd}
     >
       <div
-        className="relative flex items-center gap-3.5 p-3.5 sm:p-4 rounded-xl transition-all duration-200"
+        className="relative flex items-center gap-3.5 p-3.5 sm:p-4 rounded-xl transition-all duration-250"
         style={{
           background: 'var(--surface-2)',
           border: '1px solid var(--border)',
+          boxShadow: 'var(--shadow-xs)',
           ...dragStyle
         }}
         onMouseEnter={(e) => {
           if (isDragging) return;
           e.currentTarget.style.borderColor = colors.border;
           e.currentTarget.style.background = 'var(--surface-3)';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+          e.currentTarget.style.boxShadow = `var(--shadow-sm), 0 0 16px ${colors.bg}`;
         }}
         onMouseLeave={(e) => {
           if (isDragging) return;
           e.currentTarget.style.borderColor = 'var(--border)';
           e.currentTarget.style.background = 'var(--surface-2)';
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = 'var(--shadow-xs)';
           setConfirmDelete(false);
         }}
       >
         {/* Drag Handle */}
         {dragHandlers && (
-          <div className="shrink-0 cursor-grab active:cursor-grabbing text-[var(--text-tertiary)] opacity-0 group-hover:opacity-100 transition-opacity p-1 -ml-2">
+          <div className="shrink-0 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-60 hover:!opacity-100 transition-opacity p-1 -ml-2" style={{ color: 'var(--text-tertiary)' }}>
             <svg width="12" height="20" viewBox="0 0 12 20" fill="currentColor">
               <circle cx="4" cy="4" r="1.5" />
               <circle cx="8" cy="4" r="1.5" />
@@ -292,9 +299,9 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
           </div>
         )}
 
-        {/* Icon (Favicon or SVG) */}
+        {/* Icon */}
         <div
-          className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden"
+          className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden transition-transform duration-200 group-hover:scale-105"
           style={{ background: colors.bg, color: colors.text }}
         >
           {faviconUrl && !faviconError ? (
@@ -318,7 +325,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
             href={getSafeUrl(link.url)}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[12px] leading-tight mt-0.5 block truncate hover:underline"
+            className="text-[12px] leading-tight mt-0.5 block truncate hover:underline transition-colors"
             style={{ color: 'var(--text-tertiary)' }}
             title={link.url}
           >
@@ -327,14 +334,14 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           {confirmDelete ? (
             <div className="flex items-center gap-1.5 animate-fade-in">
               <span className="text-[10px] font-bold text-[var(--danger)] mr-1 uppercase tracking-wider">Sure?</span>
               <button
                 id={`confirm-delete-${link.id}`}
                 onClick={handleDelete}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-semibold cursor-pointer transition-all bg-[var(--danger)] text-white hover:brightness-110 active:scale-95 border-none"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold cursor-pointer transition-all bg-[var(--danger)] text-white hover:brightness-110 active:scale-95 border-none"
               >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -344,7 +351,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               <button
                 id={`cancel-delete-${link.id}`}
                 onClick={() => setConfirmDelete(false)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-medium cursor-pointer transition-all border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-3)] active:scale-95 bg-transparent"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium cursor-pointer transition-all border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-3)] active:scale-95 bg-transparent"
               >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -357,7 +364,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               <button
                 id={`copy-${link.id}`}
                 onClick={handleCopy}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all duration-150 active:scale-95"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-95"
                 style={{
                   background: copied ? 'var(--success-bg)' : 'transparent',
                   color: copied ? 'var(--success)' : 'var(--text-secondary)',
@@ -384,7 +391,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               <button
                 id={`edit-${link.id}`}
                 onClick={handleEditStart}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all duration-150 active:scale-95 opacity-50 hover:opacity-100"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-95 opacity-0 group-hover:opacity-100"
                 style={{
                   background: 'transparent',
                   color: 'var(--accent-bright)',
@@ -408,7 +415,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               <button
                 id={`delete-${link.id}`}
                 onClick={() => setConfirmDelete(true)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all duration-150 active:scale-95 opacity-50 hover:opacity-100"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-95 opacity-0 group-hover:opacity-100"
                 style={{
                   background: 'transparent',
                   color: 'var(--danger)',

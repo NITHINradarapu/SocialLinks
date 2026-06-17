@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CATEGORIES, getPlatformCategory } from '../utils/platformIcons';
+import { CATEGORIES, getPlatformCategory, getPlatformColor } from '../utils/platformIcons';
 import { toast } from 'react-hot-toast';
 
 export default function AddLink({ onAdd, links = [] }) {
@@ -55,29 +55,61 @@ export default function AddLink({ onAdd, links = [] }) {
     setTimeout(() => document.getElementById('url-input')?.focus(), 50);
   };
 
+  // Progress indicator
+  const step = !platform.trim() ? 0 : !url.trim() ? 1 : 2;
+
   return (
     <div className="flex justify-center animate-fade-in-up w-full">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-7">
           <div
-            className="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center"
-            style={{ background: 'var(--accent-glow)', border: '1px solid rgba(129,140,248,0.15)' }}
+            className="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center"
+            style={{
+              background: 'var(--accent-glow)',
+              border: '1px solid rgba(129,140,248,0.1)',
+              boxShadow: '0 4px 16px var(--accent-glow)',
+            }}
           >
-            <svg className="w-6 h-6" style={{ color: 'var(--accent)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+            <svg className="w-7 h-7" style={{ color: 'var(--accent)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
             </svg>
           </div>
-          <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>Add New Link</h1>
+          <h1 className="text-xl font-bold mb-1 font-display" style={{ color: 'var(--text-primary)' }}>Add New Link</h1>
           <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Save a profile link to access it anytime</p>
+        </div>
+
+        {/* Progress Steps */}
+        <div className="flex items-center gap-2 mb-5 px-1">
+          {['Platform', 'URL', 'Submit'].map((label, i) => (
+            <div key={label} className="flex-1 flex flex-col items-center gap-1.5">
+              <div
+                className="w-full h-1 rounded-full transition-all duration-400"
+                style={{
+                  background: step >= i
+                    ? 'linear-gradient(90deg, var(--accent), var(--accent-dim))'
+                    : 'var(--surface-3)',
+                  boxShadow: step >= i ? '0 0 8px var(--accent-glow)' : 'none',
+                }}
+              ></div>
+              <span
+                className="text-[10px] font-medium transition-colors duration-200"
+                style={{ color: step >= i ? 'var(--accent-bright)' : 'var(--text-tertiary)' }}
+              >
+                {label}
+              </span>
+            </div>
+          ))}
         </div>
 
         {/* Card */}
         <div
-          className="rounded-xl p-5 sm:p-6"
+          className="rounded-2xl p-5 sm:p-6"
           style={{
-            background: 'var(--surface-1)',
-            border: '1px solid var(--border)',
+            background: 'var(--glass)',
+            border: '1px solid var(--glass-border)',
+            backdropFilter: 'blur(12px)',
+            boxShadow: 'var(--shadow-md)',
           }}
         >
           {/* Presets */}
@@ -86,25 +118,30 @@ export default function AddLink({ onAdd, links = [] }) {
               Quick add
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {presets.map((p) => (
-                <button
-                  key={p.name}
-                  id={`preset-${p.name.toLowerCase()}`}
-                  type="button"
-                  onClick={() => selectPreset(p)}
-                  disabled={isSubmitting}
-                  className="px-3 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all duration-150 active:scale-95"
-                  style={{
-                    background: platform === p.name ? 'var(--accent)' : 'var(--surface-2)',
-                    color: platform === p.name ? '#fff' : 'var(--text-secondary)',
-                    border: `1px solid ${platform === p.name ? 'var(--accent)' : 'var(--border)'}`,
-                    opacity: isSubmitting ? 0.5 : 1,
-                    cursor: isSubmitting ? 'not-allowed' : 'pointer'
-                  }}
-                >
-                  {p.name}
-                </button>
-              ))}
+              {presets.map((p) => {
+                const colors = getPlatformColor(p.name);
+                const isSelected = platform === p.name;
+                return (
+                  <button
+                    key={p.name}
+                    id={`preset-${p.name.toLowerCase()}`}
+                    type="button"
+                    onClick={() => selectPreset(p)}
+                    disabled={isSubmitting}
+                    className="px-3 py-1.5 rounded-lg text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-95"
+                    style={{
+                      background: isSelected ? colors.bg : 'var(--surface-2)',
+                      color: isSelected ? colors.text : 'var(--text-secondary)',
+                      border: `1px solid ${isSelected ? colors.border : 'var(--border)'}`,
+                      opacity: isSubmitting ? 0.5 : 1,
+                      cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                      boxShadow: isSelected ? `0 2px 8px ${colors.bg}` : 'none',
+                    }}
+                  >
+                    {p.name}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -144,11 +181,11 @@ export default function AddLink({ onAdd, links = [] }) {
                 onChange={(e) => setCategory(e.target.value)}
                 disabled={isSubmitting}
                 placeholder="Select or type a category"
-                className="w-full rounded-lg px-3 py-2 text-[13px] outline-none transition-all duration-200"
+                className="w-full rounded-xl px-3 py-2.5 text-[13px] outline-none transition-all duration-200"
                 style={{
                   background: 'var(--surface-2)',
                   color: 'var(--text-primary)',
-                  border: '1px solid var(--border)',
+                  border: '1.5px solid var(--border)',
                   opacity: isSubmitting ? 0.7 : 1,
                   cursor: isSubmitting ? 'not-allowed' : 'text'
                 }}
@@ -182,13 +219,14 @@ export default function AddLink({ onAdd, links = [] }) {
                 id="add-link-submit"
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-[13px] font-semibold cursor-pointer transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
+                className="btn-shimmer flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[13px] font-semibold cursor-pointer transition-all duration-200 hover:shadow-lg active:scale-[0.98]"
                 style={{
                   background: 'linear-gradient(135deg, var(--accent), var(--accent-dim))',
                   color: '#fff',
                   border: 'none',
                   opacity: isSubmitting ? 0.7 : 1,
-                  cursor: isSubmitting ? 'not-allowed' : 'pointer'
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  boxShadow: '0 4px 16px var(--accent-glow)',
                 }}
               >
                 {isSubmitting ? (
@@ -210,7 +248,7 @@ export default function AddLink({ onAdd, links = [] }) {
                 type="button"
                 onClick={() => navigate('/')}
                 disabled={isSubmitting}
-                className="px-5 py-2.5 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-200 active:scale-[0.98]"
+                className="px-5 py-2.5 rounded-xl text-[13px] font-medium cursor-pointer transition-all duration-200 active:scale-[0.98]"
                 style={{
                   background: 'var(--surface-2)',
                   color: 'var(--text-secondary)',
@@ -224,7 +262,7 @@ export default function AddLink({ onAdd, links = [] }) {
             </div>
 
             <p className="text-center text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
-              Press <kbd className="px-1 py-0.5 rounded text-[10px] font-mono" style={{ background: 'var(--surface-2)', color: 'var(--accent-bright)', border: '1px solid var(--border)' }}>Enter</kbd> to submit
+              Press <kbd className="px-1.5 py-0.5 rounded-md text-[10px] font-mono" style={{ background: 'var(--surface-2)', color: 'var(--accent-bright)', border: '1px solid var(--border)' }}>Enter</kbd> to submit
             </p>
           </form>
         </div>

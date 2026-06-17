@@ -16,28 +16,59 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div 
-        className="w-full max-w-sm rounded-2xl p-8 text-center backdrop-blur-xl"
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background Orbs */}
+      <div
+        className="absolute top-[-20%] left-[-10%] w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none animate-glow-pulse"
+        style={{ background: 'var(--accent)', opacity: 0.1 }}
+      ></div>
+      <div
+        className="absolute bottom-[-10%] right-[-15%] w-[350px] h-[350px] rounded-full blur-[100px] pointer-events-none animate-glow-pulse"
+        style={{ background: 'rgba(139, 92, 246, 0.8)', opacity: 0.08, animationDelay: '2s' }}
+      ></div>
+
+      {/* Floating decorative icons */}
+      <div className="absolute top-[15%] left-[10%] opacity-[0.06] pointer-events-none animate-float" style={{ animationDelay: '0s' }}>
+        <svg viewBox="0 0 24 24" className="w-16 h-16" fill="none" stroke="var(--accent)" strokeWidth="1">
+          <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+          <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+        </svg>
+      </div>
+      <div className="absolute bottom-[20%] right-[12%] opacity-[0.06] pointer-events-none animate-float" style={{ animationDelay: '1.5s' }}>
+        <svg viewBox="0 0 24 24" className="w-12 h-12" fill="none" stroke="var(--accent)" strokeWidth="1">
+          <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+          <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+        </svg>
+      </div>
+
+      {/* Card */}
+      <div
+        className="w-full max-w-sm rounded-2xl p-8 text-center relative z-10 animate-scale-in"
         style={{
-          background: "var(--surface-1)",
+          background: "var(--glass)",
           border: "1px solid var(--glass-border)",
-          boxShadow: "var(--glass-shadow)"
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          boxShadow: "var(--shadow-xl)",
         }}
       >
+        {/* Logo */}
         <div className="flex justify-center mb-6">
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-dim))' }}
+            className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
+            style={{
+              background: 'linear-gradient(135deg, var(--accent), var(--accent-dim))',
+              boxShadow: '0 8px 24px var(--accent-glow)',
+            }}
           >
-            <svg viewBox="0 0 24 24" className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg viewBox="0 0 24 24" className="w-7 h-7 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
               <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
             </svg>
           </div>
         </div>
-        
-        <h1 className="text-2xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>
+
+        <h1 className="text-2xl font-bold mb-2 font-display" style={{ color: "var(--text-primary)" }}>
           Welcome to Link<span style={{ color: "var(--accent-bright)" }}>Hub</span>
         </h1>
         <p className="text-sm mb-8" style={{ color: "var(--text-secondary)" }}>
@@ -46,11 +77,20 @@ export default function Login() {
 
         <button
           onClick={handleLogin}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 hover:brightness-110 active:scale-95"
+          className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] group"
           style={{
             background: "var(--surface-2)",
             color: "var(--text-primary)",
             border: "1px solid var(--border)",
+            boxShadow: 'var(--shadow-sm)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'var(--border-hover)';
+            e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'var(--border)';
+            e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
           }}
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -74,6 +114,11 @@ export default function Login() {
           </svg>
           Continue with Google
         </button>
+
+        {/* Bottom hint */}
+        <p className="mt-6 text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
+          By signing in, you agree to our Terms of Service
+        </p>
       </div>
     </div>
   );

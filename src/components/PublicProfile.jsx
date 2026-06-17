@@ -18,20 +18,35 @@ function PublicLinkCard({ link, index }) {
       style={{ animationDelay: `${index * 50}ms` }}
     >
       <div
-        className="relative flex items-center gap-4 p-4 rounded-xl transition-all duration-300"
-        style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}
+        className="relative flex items-center gap-4 p-4 rounded-2xl transition-all duration-300"
+        style={{
+          background: 'var(--surface-2)',
+          border: '1px solid var(--border)',
+          boxShadow: 'var(--shadow-xs)',
+        }}
         onMouseEnter={(e) => {
           e.currentTarget.style.borderColor = colors.border;
           e.currentTarget.style.background = 'var(--surface-3)';
           e.currentTarget.style.transform = 'translateY(-2px)';
+          e.currentTarget.style.boxShadow = `var(--shadow-md), 0 0 20px ${colors.bg}`;
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.borderColor = 'var(--border)';
           e.currentTarget.style.background = 'var(--surface-2)';
           e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = 'var(--shadow-xs)';
         }}
       >
-        <div className="w-12 h-12 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110" style={{ background: colors.bg, color: colors.text }}>
+        {/* Platform color accent bar */}
+        <div
+          className="absolute left-0 top-3 bottom-3 w-1 rounded-full transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+          style={{ background: colors.text }}
+        ></div>
+
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-110"
+          style={{ background: colors.bg, color: colors.text }}
+        >
           {icon}
         </div>
         <div className="flex-1 min-w-0">
@@ -39,7 +54,7 @@ function PublicLinkCard({ link, index }) {
             {link.platform}
           </p>
         </div>
-        <div className="w-12 h-12 shrink-0 flex items-center justify-center opacity-60 sm:opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: colors.text }}>
+        <div className="w-10 h-10 shrink-0 flex items-center justify-center opacity-40 sm:opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-1" style={{ color: colors.text }}>
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
           </svg>
@@ -149,8 +164,6 @@ export default function PublicProfile() {
   }
 
   if (error) {
-    // Render the proper NotFound page — this handles the case where /:username
-    // matches a path that isn't a real user (e.g. /faq, /settings, etc.)
     return <NotFound />;
   }
 
@@ -161,7 +174,6 @@ export default function PublicProfile() {
     return acc;
   }, {});
 
-  // Predefined categories first, then custom ones, then 'Other' at the bottom
   const predefinedOrder = ['Portfolio', 'Coding', 'Social'];
   const categories = Object.keys(groupedLinks).sort((a, b) => {
     if (a === 'Other') return 1;
@@ -177,17 +189,33 @@ export default function PublicProfile() {
   return (
     <div className="min-h-screen py-16 px-5 sm:px-6 flex flex-col items-center relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-30 pointer-events-none"
-           style={{ background: 'radial-gradient(ellipse at top, var(--accent-dim) 0%, transparent 70%)' }} />
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] opacity-25 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse at top, var(--accent-dim) 0%, transparent 70%)' }}
+      />
+      {/* Secondary glow */}
+      <div
+        className="absolute bottom-[20%] left-[10%] w-[300px] h-[300px] rounded-full blur-[120px] opacity-10 pointer-events-none"
+        style={{ background: 'var(--accent)' }}
+      />
 
       <div className="w-full max-w-lg z-10">
         {/* Profile Info */}
-        <div className="flex flex-col items-center text-center mb-10 animate-fade-in-up">
-          <div className="w-24 h-24 rounded-full overflow-hidden mb-4 shadow-xl" style={{ border: '3px solid var(--glass-border)' }}>
-            <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
+        <div className="flex flex-col items-center text-center mb-12 animate-fade-in-up">
+          {/* Avatar with gradient ring */}
+          <div
+            className="w-28 h-28 rounded-full p-[3px] mb-5"
+            style={{
+              background: 'linear-gradient(135deg, var(--accent), var(--accent-dim), var(--accent-bright))',
+              boxShadow: '0 8px 32px var(--accent-glow)',
+            }}
+          >
+            <div className="w-full h-full rounded-full overflow-hidden" style={{ background: 'var(--surface-2)' }}>
+              <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
+            </div>
           </div>
-          <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{profile.name}</h1>
-          <p className="text-[14px] max-w-xs" style={{ color: 'var(--text-secondary)' }}>{profile.bio}</p>
+          <h1 className="text-2xl font-bold mb-2 font-display" style={{ color: 'var(--text-primary)' }}>{profile.name}</h1>
+          <p className="text-[14px] max-w-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{profile.bio}</p>
         </div>
 
         {/* Links */}
@@ -195,9 +223,12 @@ export default function PublicProfile() {
           {categories.length > 0 ? (
             categories.map((category, catIndex) => (
               <div key={category} className="animate-fade-in-up" style={{ animationDelay: `${catIndex * 100}ms` }}>
-                <h2 className="text-[12px] font-bold uppercase tracking-widest mb-3 pl-1" style={{ color: 'var(--text-tertiary)' }}>
-                  {category}
-                </h2>
+                <div className="flex items-center gap-2 mb-3 pl-1">
+                  <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, var(--accent), var(--accent-dim))' }}></div>
+                  <h2 className="text-[12px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-tertiary)' }}>
+                    {category}
+                  </h2>
+                </div>
                 <div className="flex flex-col gap-3">
                   {groupedLinks[category].map((link, i) => (
                     <PublicLinkCard key={link.id} link={link} index={i} />
@@ -211,8 +242,15 @@ export default function PublicProfile() {
         </div>
       </div>
       
-      <div className="mt-16 text-[11px] animate-fade-in-up" style={{ animationDelay: '500ms', color: 'var(--text-tertiary)' }}>
-        Powered by <a href="/" className="hover:underline" style={{ color: 'var(--accent)' }}>LinkHub</a>
+      <div className="mt-16 text-[11px] animate-fade-in-up flex items-center gap-1.5" style={{ animationDelay: '500ms', color: 'var(--text-tertiary)' }}>
+        Powered by{' '}
+        <a href="/" className="hover:underline font-medium inline-flex items-center gap-1" style={{ color: 'var(--accent)' }}>
+          <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+          </svg>
+          LinkHub
+        </a>
       </div>
     </div>
   );
