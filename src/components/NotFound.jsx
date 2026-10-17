@@ -6,7 +6,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-[var(--surface-0)] text-[var(--text-primary)] px-6">
       {/* Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-[var(--danger)] blur-[150px] opacity-8 pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[150px] pointer-events-none" style={{ background: 'var(--danger)', opacity: 0.08 }}></div>
 
       <div className="relative z-10 flex flex-col items-center text-center animate-fade-in-up">
         {/* Broken Link Illustration */}

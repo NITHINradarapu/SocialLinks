@@ -18,7 +18,7 @@ export default function Navbar({ linkCount }) {
         boxShadow: 'var(--shadow-xs)',
       }}
     >
-      <div className="max-w-3xl mx-auto px-5 sm:px-6 h-[56px] flex items-center justify-between">
+      <div className="max-w-3xl mx-auto px-5 sm:px-6 h-14 flex items-center justify-between">
         {/* Logo */}
         <button
           id="nav-logo"
@@ -26,7 +26,7 @@ export default function Navbar({ linkCount }) {
           className="flex items-center gap-2.5 group cursor-pointer bg-transparent border-none"
         >
           <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-lg"
+            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3"
             style={{
               background: 'linear-gradient(135deg, var(--accent), var(--accent-dim))',
               boxShadow: '0 2px 8px var(--accent-glow)',
@@ -57,9 +57,8 @@ export default function Navbar({ linkCount }) {
             </span>
           )}
 
-          {/* Separator */}
           {linkCount > 0 && (
-            <div className="w-px h-5 mx-0.5" style={{ background: 'var(--border)' }}></div>
+            <div className="w-px h-5 mx-0.5" style={{ background: 'var(--border)' }} />
           )}
 
           {isHome ? (
@@ -83,20 +82,7 @@ export default function Navbar({ linkCount }) {
             <button
               id="nav-back"
               onClick={() => navigate('/')}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-200 active:scale-95 group"
-              style={{
-                background: 'var(--surface-2)',
-                color: 'var(--text-secondary)',
-                border: '1px solid var(--border)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'var(--border-hover)';
-                e.currentTarget.style.background = 'var(--surface-3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'var(--border)';
-                e.currentTarget.style.background = 'var(--surface-2)';
-              }}
+              className="btn-ghost flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium cursor-pointer active:scale-95 group"
             >
               <svg className="w-3.5 h-3.5 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -106,17 +92,9 @@ export default function Navbar({ linkCount }) {
           )}
 
           <button
+            id="nav-about"
             onClick={() => navigate('/about')}
-            className="flex items-center justify-center p-2 rounded-lg transition-all duration-200"
-            style={{ color: 'var(--text-tertiary)' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'var(--text-primary)';
-              e.currentTarget.style.background = 'var(--surface-3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'var(--text-tertiary)';
-              e.currentTarget.style.background = 'transparent';
-            }}
+            className="btn-icon flex items-center justify-center p-2 transition-all duration-200"
             title="About Developer"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -127,6 +105,7 @@ export default function Navbar({ linkCount }) {
           {/* Logout Button */}
           {user && (
             <button
+              id="nav-logout"
               onClick={async () => {
                 try {
                   await logOut();
@@ -137,15 +116,8 @@ export default function Navbar({ linkCount }) {
                   toast.error('Failed to log out. Please try again.');
                 }
               }}
-              className="flex items-center justify-center p-2 rounded-lg transition-all duration-200"
+              className="btn-icon-danger flex items-center justify-center p-2 transition-all duration-200"
               title="Log Out"
-              style={{ color: 'var(--danger)' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--danger-bg)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-              }}
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
