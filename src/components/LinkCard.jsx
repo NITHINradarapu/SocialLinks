@@ -262,11 +262,12 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
       onDragEnd={dragHandlers?.onDragEnd}
     >
       <div
-        className="relative flex items-center gap-3.5 p-3.5 sm:p-4 rounded-xl transition-all duration-250"
+        className="relative flex items-center gap-3.5 p-3.5 sm:p-4 rounded-xl link-card-inner"
         style={{
           background: 'var(--surface-2)',
           border: '1px solid var(--border)',
           boxShadow: 'var(--shadow-xs)',
+          transition: 'border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease',
           ...dragStyle
         }}
         onMouseEnter={(e) => {
@@ -391,7 +392,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               <button
                 id={`edit-${link.id}`}
                 onClick={handleEditStart}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-95 opacity-0 group-hover:opacity-100"
+                className="group-hover-show flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-95 opacity-0 group-hover:opacity-100"
                 style={{
                   background: 'transparent',
                   color: 'var(--accent-bright)',
@@ -415,7 +416,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               <button
                 id={`delete-${link.id}`}
                 onClick={() => setConfirmDelete(true)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-95 opacity-0 group-hover:opacity-100"
+                className="group-hover-show flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-95 opacity-0 group-hover:opacity-100"
                 style={{
                   background: 'transparent',
                   color: 'var(--danger)',

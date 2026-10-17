@@ -84,7 +84,7 @@ export default function AddLink({ onAdd, links = [] }) {
           {['Platform', 'URL', 'Submit'].map((label, i) => (
             <div key={label} className="flex-1 flex flex-col items-center gap-1.5">
               <div
-                className="w-full h-1 rounded-full transition-all duration-400"
+                className="w-full h-1 rounded-full transition-all duration-300"
                 style={{
                   background: step >= i
                     ? 'linear-gradient(90deg, var(--accent), var(--accent-dim))'

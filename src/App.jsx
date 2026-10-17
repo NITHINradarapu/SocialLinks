@@ -164,7 +164,7 @@ export default function App() {
 
       {!hideLayout && (
         <footer
-          className="text-center py-5 text-[11px]"
+          className="text-center pt-5 pb-20 sm:pb-24 text-[11px]"
           style={{ color: "var(--text-tertiary)" }}
         >
           Built with <span style={{ color: "var(--accent)" }}>♥</span> — LinkHub
