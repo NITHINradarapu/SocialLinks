@@ -50,7 +50,7 @@ export default function ProfileHeader({ profile, onUpdate }) {
         return;
       }
       
-      if (cleanUsername.length < 3) {
+      if (cleanUsername.length < 3 || cleanUsername.length > 30) {
         setUsernameStatus('invalid');
         return;
       }
@@ -186,6 +186,7 @@ export default function ProfileHeader({ profile, onUpdate }) {
               ref={nameInputRef}
               type="text"
               value={editName}
+              maxLength={100}
               onChange={(e) => setEditName(e.target.value)}
               disabled={saving}
               placeholder="Your Name"
@@ -199,6 +200,7 @@ export default function ProfileHeader({ profile, onUpdate }) {
             <input
               type="text"
               value={editBio}
+              maxLength={1000}
               onChange={(e) => setEditBio(e.target.value)}
               disabled={saving}
               placeholder="Short bio..."
@@ -229,6 +231,7 @@ export default function ProfileHeader({ profile, onUpdate }) {
                 onChange={(e) => setEditUsername(e.target.value)}
                 disabled={saving}
                 placeholder="username"
+                maxLength={30}
                 className={`w-full pr-10 ${
                   usernameStatus === 'available' ? 'border-green-500/50' : 
                   usernameStatus === 'unavailable' || usernameStatus === 'invalid' || usernameStatus === 'error' ? 'border-red-500/50' : ''
@@ -254,7 +257,7 @@ export default function ProfileHeader({ profile, onUpdate }) {
               }`}>
                 {usernameStatus === 'available' && 'Username is available!'}
                 {usernameStatus === 'unavailable' && 'Username is already taken.'}
-                {usernameStatus === 'invalid' && 'Username must be at least 3 characters and contain only letters, numbers, or underscores.'}
+                {usernameStatus === 'invalid' && 'Username must be 3–30 characters and contain only letters, numbers, or underscores.'}
                 {usernameStatus === 'error' && 'Error validating username.'}
               </p>
             )}

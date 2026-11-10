@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useLinks } from "./hooks/useLinks";
 import { useProfile } from "./hooks/useProfile";
@@ -6,16 +6,26 @@ import { useTheme } from "./hooks/useTheme";
 import { useAuth } from "./hooks/useAuth";
 import Navbar from "./components/Navbar";
 import LinkList from "./components/LinkList";
-import AddLink from "./components/AddLink";
 import ProfileHeader from "./components/ProfileHeader";
-import PublicProfile from "./components/PublicProfile";
 import ThemeSwitcher from "./components/ThemeSwitcher";
-import Login from "./components/Login";
-import LandingPage from "./components/LandingPage";
-import NotFound from "./components/NotFound";
-import About from "./components/About";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
+
+// Route-level code splitting: only the dashboard shell is in the main bundle
+const AddLink = lazy(() => import("./components/AddLink"));
+const PublicProfile = lazy(() => import("./components/PublicProfile"));
+const Login = lazy(() => import("./components/Login"));
+const LandingPage = lazy(() => import("./components/LandingPage"));
+const NotFound = lazy(() => import("./components/NotFound"));
+const About = lazy(() => import("./components/About"));
+
+function PageSpinner() {
+  return (
+    <div className="min-h-[50vh] flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+}
 
 export default function App() {
   const { links, loadingLinks, linksError, addLink, updateLink, deleteLink, reorderLinks } = useLinks();
@@ -127,6 +137,7 @@ export default function App() {
       <main
         className={`flex-1 w-full ${hideLayout ? "" : "max-w-2xl mx-auto px-5 sm:px-6 py-8"}`}
       >
+        <Suspense fallback={<PageSpinner />}>
         <Routes>
           <Route
             path="/"
@@ -160,6 +171,7 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </Suspense>
       </main>
 
       {!hideLayout && (

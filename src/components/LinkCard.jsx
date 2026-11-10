@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { getPlatformIcon, getPlatformColor, isKnownPlatform, CATEGORIES, getPlatformCategory, getSafeUrl } from '../utils/platformIcons';
+import { getPlatformIcon, getPlatformColor, isKnownPlatform, CATEGORIES, getPlatformCategory, getSafeUrl, isValidHttpUrl } from '../utils/platformIcons';
 import { toast } from 'react-hot-toast';
 
 export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, overIndex, dragHandlers, uniqueCategories = [] }) {
@@ -50,9 +50,14 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
 
   const handleDelete = () => {
     setDeleting(true);
-    setTimeout(() => {
-      onDelete(link.id);
-      toast.success('Link deleted');
+    setTimeout(async () => {
+      try {
+        await onDelete(link.id);
+        toast.success('Link deleted');
+      } catch {
+        // useLinks already rolled back and showed an error toast
+        setDeleting(false);
+      }
     }, 250);
   };
 
@@ -67,25 +72,20 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
     setEditing(false);
   };
 
-  const validateUrl = (str) => {
-    try {
-      const u = new URL(str);
-      return u.protocol === 'http:' || u.protocol === 'https:';
-    } catch {
-      return false;
-    }
-  };
-
-  const handleEditSave = () => {
+  const handleEditSave = async () => {
     const p = editPlatform.trim();
     const u = editUrl.trim();
     if (!p) return toast.error('Platform name is required.');
     if (!u) return toast.error('URL is required.');
-    if (!validateUrl(u)) return toast.error('Enter a valid URL.');
-    
-    onEdit(link.id, p, u, editCategory);
-    setEditing(false);
-    toast.success('Link updated!');
+    if (!isValidHttpUrl(u)) return toast.error('Enter a valid URL.');
+
+    try {
+      await onEdit(link.id, p, u, editCategory);
+      setEditing(false);
+      toast.success('Link updated!');
+    } catch {
+      // useLinks already rolled back and showed an error toast; keep the form open
+    }
   };
 
   const handleEditKeyDown = (e) => {

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { getProfileFromFirestore, getUidByUsername } from '../services/profileService';
 import { getLinksFromFirestore } from '../services/linkService';
 import { getPlatformIcon, getPlatformColor, getPlatformCategory, getSafeUrl } from '../utils/platformIcons';
+import { ACCENTS } from '../hooks/useTheme';
 import NotFound from './NotFound';
 
 function PublicLinkCard({ link, index }) {
@@ -130,13 +131,6 @@ export default function PublicProfile() {
     
     const themeMode = profile.themeMode || 'dark';
     const themeAccent = profile.themeAccent || 'indigo';
-    const ACCENTS = {
-      indigo: { color: '#818cf8', dim: '#6366f1', glow: 'rgba(129, 140, 248, 0.18)', bright: '#a5b4fc' },
-      emerald: { color: '#34d399', dim: '#10b981', glow: 'rgba(52, 211, 153, 0.18)', bright: '#6ee7b7' },
-      rose: { color: '#fb7185', dim: '#f43f5e', glow: 'rgba(251, 113, 133, 0.18)', bright: '#fda4af' },
-      amber: { color: '#fbbf24', dim: '#f59e0b', glow: 'rgba(251, 191, 36, 0.18)', bright: '#fcd34d' },
-      cyan: { color: '#22d3ee', dim: '#06b6d4', glow: 'rgba(34, 211, 238, 0.18)', bright: '#67e8f9' },
-    };
     
     const accent = ACCENTS[themeAccent] || ACCENTS.indigo;
     

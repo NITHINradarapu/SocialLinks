@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CATEGORIES, getPlatformCategory, getPlatformColor } from '../utils/platformIcons';
+import { CATEGORIES, getPlatformCategory, getPlatformColor, isValidHttpUrl } from '../utils/platformIcons';
 import { toast } from 'react-hot-toast';
 
 export default function AddLink({ onAdd, links = [] }) {
@@ -13,17 +13,12 @@ export default function AddLink({ onAdd, links = [] }) {
 
   useEffect(() => { platformRef.current?.focus(); }, []);
 
-  const validateUrl = (str) => {
-    try { const u = new URL(str); return u.protocol === 'http:' || u.protocol === 'https:'; }
-    catch { return false; }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const p = platform.trim(), u = url.trim();
     if (!p) return toast.error('Enter a platform name.');
     if (!u) return toast.error('Enter a URL.');
-    if (!validateUrl(u)) return toast.error('Enter a valid URL (e.g. https://github.com/user).');
+    if (!isValidHttpUrl(u)) return toast.error('Enter a valid URL (e.g. https://github.com/user).');
     
     setIsSubmitting(true);
     try {

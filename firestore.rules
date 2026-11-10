@@ -1,39 +1,100 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Optional string field with a maximum length
+    function optionalString(data, field, maxLen) {
+      return !(field in data)
+        || data[field] == null
+        || (data[field] is string && data[field].size() <= maxLen);
+    }
+
+    // The profile's username (if any) must be backed by a /usernames mapping
+    // owned by this user. getAfter() is required because the mapping and the
+    // profile are written together in a single batch.
+    function ownsClaimedUsername(userId, profile) {
+      return !('username' in profile)
+        || profile.username == null
+        || (
+          profile.username is string
+          && existsAfter(/databases/$(database)/documents/usernames/$(profile.username))
+          && getAfter(/databases/$(database)/documents/usernames/$(profile.username)).data.uid == userId
+        );
+    }
+
+    function validProfile(profile) {
+      return profile is map
+        && optionalString(profile, 'name', 100)
+        && optionalString(profile, 'bio', 1000)
+        && optionalString(profile, 'avatar', 2048)
+        && optionalString(profile, 'themeMode', 20)
+        && optionalString(profile, 'themeAccent', 20);
+    }
+
+    function validLink(link) {
+      return link.platform is string
+        && link.platform.size() > 0
+        && link.platform.size() <= 100
+        && link.url is string
+        && link.url.size() <= 2048
+        // http(s) only — blocks javascript:, data:, etc.
+        && link.url.matches('^[hH][tT][tT][pP][sS]?:.*')
+        && optionalString(link, 'category', 50);
+    }
+
+    function validUsername(username) {
+      return username.matches('^[a-z0-9_]{3,30}$')
+        && !(username in ['login', 'add', 'p', 'admin', 'dashboard', 'settings',
+                          'profile', 'api', 'help', 'static', 'assets', 'about']);
+    }
+
     // User Profile Document
     match /users/{userId} {
-      // ANYONE can read a user's profile (needed for Public Profiles)
-      allow read: if true;
-      // ONLY the authenticated user who owns the profile can write to it,
-      // and their profile username must match their claimed username mapping.
-      allow write: if request.auth != null && request.auth.uid == userId
+      // Anyone can fetch a single profile (needed for Public Profiles),
+      // but nobody can list/enumerate all users.
+      allow get: if true;
+      allow list: if false;
+
+      allow create, update: if isOwner(userId)
         && (
-          !('username' in request.resource.data.profile) ||
-          request.resource.data.profile.username == null ||
-          get(/databases/$(database)/documents/usernames/$(request.resource.data.profile.username)).data.uid == userId
+          !('profile' in request.resource.data)
+          || (
+            validProfile(request.resource.data.profile)
+            && ownsClaimedUsername(userId, request.resource.data.profile)
+          )
         );
-      
+      allow delete: if isOwner(userId);
+
       // Links Subcollection
       match /links/{linkId} {
-        // ANYONE can read a user's links (needed for Public Profiles)
+        // Anyone can read a user's links (needed for Public Profiles)
         allow read: if true;
-        // ONLY the authenticated user who owns the links can write to them
-        allow write: if request.auth != null && request.auth.uid == userId;
+        allow create, update: if isOwner(userId) && validLink(request.resource.data);
+        allow delete: if isOwner(userId);
       }
     }
 
     // Usernames mapping collection
     match /usernames/{username} {
-      // ANYONE can read to check availability
-      allow read: if true;
-      // ONLY the owner of the UID can create or delete the mapping
-      allow write: if request.auth != null && (
-        (request.method == 'create' && request.resource.data.uid == request.auth.uid) ||
-        (request.method == 'delete' && resource.data.uid == request.auth.uid) ||
-        (request.method == 'update' && resource.data.uid == request.auth.uid && request.resource.data.uid == request.auth.uid)
-      );
+      // Anyone can look up a single username (availability check / profile
+      // resolution), but nobody can list/enumerate all usernames.
+      allow get: if true;
+      allow list: if false;
+
+      // Only the owner of the UID can create, keep or delete the mapping
+      allow create: if request.auth != null
+        && validUsername(username)
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid;
+      allow update: if request.auth != null
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
     }
   }
 }

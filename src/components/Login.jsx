@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import { signInWithGoogle } from "../services/authService";
 
 export default function Login() {
@@ -12,6 +13,13 @@ export default function Login() {
       navigate(from, { replace: true });
     } catch (error) {
       console.error("Login failed", error);
+      // The user closing the popup themselves isn't an error worth reporting
+      if (error?.code === "auth/popup-closed-by-user" || error?.code === "auth/cancelled-popup-request") return;
+      if (error?.code === "auth/popup-blocked") {
+        toast.error("Sign-in popup was blocked. Allow popups for this site and try again.");
+      } else {
+        toast.error("Sign-in failed. Please try again.");
+      }
     }
   };
 
