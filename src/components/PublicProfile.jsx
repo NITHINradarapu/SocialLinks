@@ -15,48 +15,33 @@ function PublicLinkCard({ link, index }) {
       href={getSafeUrl(link.url)}
       target="_blank"
       rel="noopener noreferrer"
-      className="group animate-fade-in-up block w-full"
-      style={{ animationDelay: `${index * 50}ms` }}
+      className="group block w-full animate-fade-in"
+      style={{ animationDelay: `${index * 30}ms` }}
     >
       <div
-        className="relative flex items-center gap-4 p-4 rounded-2xl transition-all duration-300"
+        className="flex items-center gap-3.5 p-3 sm:p-3.5 rounded-xl border transition-colors card-quiet"
         style={{
-          background: 'var(--surface-2)',
-          border: '1px solid var(--border)',
-          boxShadow: 'var(--shadow-xs)',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = colors.border;
-          e.currentTarget.style.background = 'var(--surface-3)';
-          e.currentTarget.style.transform = 'translateY(-2px)';
-          e.currentTarget.style.boxShadow = `var(--shadow-md), 0 0 20px ${colors.bg}`;
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = 'var(--border)';
-          e.currentTarget.style.background = 'var(--surface-2)';
-          e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = 'var(--shadow-xs)';
+          background: 'var(--surface-1)',
+          borderColor: 'var(--border)',
         }}
       >
-        {/* Platform color accent bar */}
         <div
-          className="absolute left-0 top-3 bottom-3 w-1 rounded-full transition-opacity duration-300 opacity-0 group-hover:opacity-100"
-          style={{ background: colors.text }}
-        ></div>
-
-        <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-110"
-          style={{ background: colors.bg, color: colors.text }}
+          className="w-9 h-9 rounded-lg flex items-center justify-center border shrink-0"
+          style={{ 
+            background: 'var(--surface-2)', 
+            borderColor: 'var(--border)',
+            color: colors.text 
+          }}
         >
           {icon}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[15px] font-semibold text-left group-hover:text-[var(--accent-bright)] transition-colors" style={{ color: 'var(--text-primary)' }}>
+          <p className="text-[13.5px] font-medium leading-tight truncate" style={{ color: 'var(--text-primary)' }}>
             {link.platform}
           </p>
         </div>
-        <div className="w-10 h-10 shrink-0 flex items-center justify-center opacity-40 sm:opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-1" style={{ color: colors.text }}>
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <div className="w-6 h-6 shrink-0 flex items-center justify-center text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
           </svg>
         </div>
@@ -97,7 +82,7 @@ export default function PublicProfile() {
         if (profileData) {
           setProfile(profileData);
         } else {
-          setProfile({ name: 'User', bio: 'No bio provided', avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=fallback' });
+          setProfile({ name: 'User', bio: '', avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=fallback' });
         }
         setLinks(linksData || []);
       } catch (err) {
@@ -112,7 +97,7 @@ export default function PublicProfile() {
 
   useEffect(() => {
     if (!profile) return;
-    const defaultTitle = "Link Hub — Your Premium Link-in-Bio Dashboard";
+    const defaultTitle = "LinkHub — Directory";
     document.title = `${profile.name} (@${username || 'profile'}) | LinkHub`;
     return () => {
       document.title = defaultTitle;
@@ -152,7 +137,7 @@ export default function PublicProfile() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-6 h-6 border-2 border-[var(--text-primary)] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -181,49 +166,42 @@ export default function PublicProfile() {
   });
 
   return (
-    <div className="min-h-screen py-16 px-5 sm:px-6 flex flex-col items-center relative overflow-hidden">
-      {/* Background decoration */}
-      <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] opacity-25 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at top, var(--accent-dim) 0%, transparent 70%)' }}
-      />
-      {/* Secondary glow */}
-      <div
-        className="absolute bottom-[20%] left-[10%] w-[300px] h-[300px] rounded-full blur-[120px] opacity-10 pointer-events-none"
-        style={{ background: 'var(--accent)' }}
-      />
-
-      <div className="w-full max-w-lg z-10">
+    <div className="min-h-screen py-16 px-4 sm:px-6 flex flex-col items-center">
+      <div className="w-full max-w-md">
         {/* Profile Info */}
-        <div className="flex flex-col items-center text-center mb-12 animate-fade-in-up">
-          {/* Avatar with gradient ring */}
+        <div className="flex flex-col items-center text-center mb-8 animate-fade-in">
+          {/* Avatar with hairline border */}
           <div
-            className="w-28 h-28 rounded-full p-[3px] mb-5"
+            className="w-20 h-20 rounded-full border overflow-hidden p-0.5 mb-3.5"
             style={{
-              background: 'linear-gradient(135deg, var(--accent), var(--accent-dim), var(--accent-bright))',
-              boxShadow: '0 8px 32px var(--accent-glow)',
+              borderColor: 'var(--border)',
+              background: 'var(--surface-2)',
             }}
           >
-            <div className="w-full h-full rounded-full overflow-hidden" style={{ background: 'var(--surface-2)' }}>
-              <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
-            </div>
+            <img src={profile.avatar} alt={profile.name} className="w-full h-full rounded-full object-cover" />
           </div>
-          <h1 className="text-2xl font-bold mb-2 font-display" style={{ color: 'var(--text-primary)' }}>{profile.name}</h1>
-          <p className="text-[14px] max-w-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{profile.bio}</p>
+          <h1 className="text-xl font-medium mb-1 font-display" style={{ color: 'var(--text-primary)' }}>
+            {profile.name}
+          </h1>
+          {profile.bio && (
+            <p className="text-[13px] max-w-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              {profile.bio}
+            </p>
+          )}
         </div>
 
-        {/* Links */}
-        <div className="flex flex-col gap-8 w-full">
+        {/* Links Grouped by Category */}
+        <div className="flex flex-col gap-6 w-full">
           {categories.length > 0 ? (
-            categories.map((category, catIndex) => (
-              <div key={category} className="animate-fade-in-up" style={{ animationDelay: `${catIndex * 100}ms` }}>
-                <div className="flex items-center gap-2 mb-3 pl-1">
-                  <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, var(--accent), var(--accent-dim))' }}></div>
-                  <h2 className="text-[12px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-tertiary)' }}>
+            categories.map((category) => (
+              <div key={category} className="animate-fade-in">
+                <div className="flex items-center gap-2 mb-2 px-1">
+                  <h2 className="text-[11px] font-mono-meta font-medium uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
                     {category}
                   </h2>
+                  <div className="flex-1 h-px" style={{ background: 'var(--border)' }}></div>
                 </div>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-2">
                   {groupedLinks[category].map((link, i) => (
                     <PublicLinkCard key={link.id} link={link} index={i} />
                   ))}
@@ -231,20 +209,20 @@ export default function PublicProfile() {
               </div>
             ))
           ) : (
-            <p className="text-center py-10 text-[14px]" style={{ color: 'var(--text-tertiary)' }}>No links added yet.</p>
+            <p className="text-center py-8 text-[13px]" style={{ color: 'var(--text-tertiary)' }}>
+              No links added yet
+            </p>
           )}
         </div>
-      </div>
-      
-      <div className="mt-16 text-[11px] animate-fade-in-up flex items-center gap-1.5" style={{ animationDelay: '500ms', color: 'var(--text-tertiary)' }}>
-        Powered by{' '}
-        <a href="/" className="hover:underline font-medium inline-flex items-center gap-1" style={{ color: 'var(--accent)' }}>
-          <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
-            <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
-          </svg>
-          LinkHub
-        </a>
+
+        {/* Quiet Footer */}
+        <div className="mt-12 text-center text-[11px] font-mono-meta flex items-center justify-center gap-1.5" style={{ color: 'var(--text-tertiary)' }}>
+          <span>LinkHub</span>
+          <span>·</span>
+          <a href="/" className="hover:underline" style={{ color: 'var(--text-secondary)' }}>
+            Create your own
+          </a>
+        </div>
       </div>
     </div>
   );

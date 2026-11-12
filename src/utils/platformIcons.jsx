@@ -92,27 +92,27 @@ const platformIcons = {
   ),
 };
 
-// Color map for platform badge accents
+// Color map for platform badge accents — restrained and quiet
 const platformColors = {
-  github: { bg: 'rgba(110, 118, 129, 0.15)', text: '#8b949e', border: 'rgba(110, 118, 129, 0.3)' },
-  linkedin: { bg: 'rgba(10, 102, 194, 0.15)', text: '#5ba3d9', border: 'rgba(10, 102, 194, 0.3)' },
-  leetcode: { bg: 'rgba(255, 161, 22, 0.15)', text: '#ffa116', border: 'rgba(255, 161, 22, 0.3)' },
-  twitter: { bg: 'rgba(29, 155, 240, 0.15)', text: '#1d9bf0', border: 'rgba(29, 155, 240, 0.3)' },
-  x: { bg: 'rgba(110, 118, 129, 0.15)', text: '#e1e1e1', border: 'rgba(110, 118, 129, 0.3)' },
-  portfolio: { bg: 'rgba(52, 211, 153, 0.15)', text: '#34d399', border: 'rgba(52, 211, 153, 0.3)' },
-  youtube: { bg: 'rgba(239, 68, 68, 0.15)', text: '#ef4444', border: 'rgba(239, 68, 68, 0.3)' },
-  instagram: { bg: 'rgba(236, 72, 153, 0.15)', text: '#ec4899', border: 'rgba(236, 72, 153, 0.3)' },
-  discord: { bg: 'rgba(99, 102, 241, 0.15)', text: '#6366f1', border: 'rgba(99, 102, 241, 0.3)' },
-  twitch: { bg: 'rgba(139, 92, 246, 0.15)', text: '#8b5cf6', border: 'rgba(139, 92, 246, 0.3)' },
-  stackoverflow: { bg: 'rgba(249, 115, 22, 0.15)', text: '#f97316', border: 'rgba(249, 115, 22, 0.3)' },
-  dribbble: { bg: 'rgba(244, 63, 94, 0.15)', text: '#f43f5e', border: 'rgba(244, 63, 94, 0.3)' },
-  spotify: { bg: 'rgba(16, 185, 129, 0.15)', text: '#10b981', border: 'rgba(16, 185, 129, 0.3)' },
-  tiktok: { bg: 'rgba(20, 184, 166, 0.15)', text: '#14b8a6', border: 'rgba(20, 184, 166, 0.3)' },
-  dev: { bg: 'rgba(15, 23, 42, 0.15)', text: '#38bdf8', border: 'rgba(15, 23, 42, 0.3)' },
-  behance: { bg: 'rgba(59, 130, 246, 0.15)', text: '#3b82f6', border: 'rgba(59, 130, 246, 0.3)' },
-  medium: { bg: 'rgba(0, 0, 0, 0.15)', text: '#a3a3a3', border: 'rgba(163, 163, 163, 0.3)' },
-  facebook: { bg: 'rgba(37, 99, 235, 0.15)', text: '#2563eb', border: 'rgba(37, 99, 235, 0.3)' },
-  default: { bg: 'rgba(129, 140, 248, 0.15)', text: '#818cf8', border: 'rgba(129, 140, 248, 0.3)' },
+  github: { bg: 'var(--surface-2)', text: 'var(--text-primary)', border: 'var(--border)' },
+  linkedin: { bg: 'var(--surface-2)', text: '#0a66c2', border: 'var(--border)' },
+  leetcode: { bg: 'var(--surface-2)', text: '#f59e0b', border: 'var(--border)' },
+  twitter: { bg: 'var(--surface-2)', text: 'var(--text-primary)', border: 'var(--border)' },
+  x: { bg: 'var(--surface-2)', text: 'var(--text-primary)', border: 'var(--border)' },
+  portfolio: { bg: 'var(--surface-2)', text: 'var(--accent)', border: 'var(--border)' },
+  youtube: { bg: 'var(--surface-2)', text: '#ef4444', border: 'var(--border)' },
+  instagram: { bg: 'var(--surface-2)', text: '#ec4899', border: 'var(--border)' },
+  discord: { bg: 'var(--surface-2)', text: '#6366f1', border: 'var(--border)' },
+  twitch: { bg: 'var(--surface-2)', text: '#9333ea', border: 'var(--border)' },
+  stackoverflow: { bg: 'var(--surface-2)', text: '#f97316', border: 'var(--border)' },
+  dribbble: { bg: 'var(--surface-2)', text: '#ea4c89', border: 'var(--border)' },
+  spotify: { bg: 'var(--surface-2)', text: '#10b981', border: 'var(--border)' },
+  tiktok: { bg: 'var(--surface-2)', text: 'var(--text-primary)', border: 'var(--border)' },
+  dev: { bg: 'var(--surface-2)', text: 'var(--text-primary)', border: 'var(--border)' },
+  behance: { bg: 'var(--surface-2)', text: '#0057ff', border: 'var(--border)' },
+  medium: { bg: 'var(--surface-2)', text: 'var(--text-primary)', border: 'var(--border)' },
+  facebook: { bg: 'var(--surface-2)', text: '#1877f2', border: 'var(--border)' },
+  default: { bg: 'var(--surface-2)', text: 'var(--text-secondary)', border: 'var(--border)' },
 };
 
 export function getPlatformIcon(platformName) {

@@ -44,7 +44,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
       document.body.removeChild(ta);
     }
     setCopied(true);
-    toast.success('Link copied!');
+    toast.success('Link copied');
     setTimeout(() => setCopied(false), 1500);
   };
 
@@ -55,10 +55,9 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
         await onDelete(link.id);
         toast.success('Link deleted');
       } catch {
-        // useLinks already rolled back and showed an error toast
         setDeleting(false);
       }
-    }, 250);
+    }, 200);
   };
 
   const handleEditStart = () => {
@@ -75,16 +74,16 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
   const handleEditSave = async () => {
     const p = editPlatform.trim();
     const u = editUrl.trim();
-    if (!p) return toast.error('Platform name is required.');
-    if (!u) return toast.error('URL is required.');
-    if (!isValidHttpUrl(u)) return toast.error('Enter a valid URL.');
+    if (!p) return toast.error('Platform name is required');
+    if (!u) return toast.error('URL is required');
+    if (!isValidHttpUrl(u)) return toast.error('Enter a valid URL');
 
     try {
       await onEdit(link.id, p, u, editCategory);
       setEditing(false);
-      toast.success('Link updated!');
+      toast.success('Link updated');
     } catch {
-      // useLinks already rolled back and showed an error toast; keep the form open
+      // Handled in hook
     }
   };
 
@@ -98,7 +97,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
     }
   };
 
-  const shortUrl = link.url.length > 42 ? link.url.slice(0, 42) + '…' : link.url;
+  const shortUrl = link.url.length > 44 ? link.url.slice(0, 44) + '…' : link.url;
 
   // ── Drag state classes ──
   const isDragging = dragIndex === index;
@@ -106,12 +105,12 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
   
   let dragStyle = {};
   if (isDragging) {
-    dragStyle = { opacity: 0.4, transform: 'scale(0.97)' };
+    dragStyle = { opacity: 0.4 };
   } else if (isOver && dragIndex !== null) {
     if (dragIndex > index) {
-      dragStyle = { borderTop: '2px solid var(--accent)', transform: 'translateY(2px)' };
+      dragStyle = { borderTop: '2px solid var(--accent)' };
     } else {
-      dragStyle = { borderBottom: '2px solid var(--accent)', transform: 'translateY(-2px)' };
+      dragStyle = { borderBottom: '2px solid var(--accent)' };
     }
   }
 
@@ -120,38 +119,28 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
     return (
       <div
         id={`link-card-${link.id}`}
-        className="group animate-fade-in-up"
-        style={{ animationDelay: `${index * 50}ms` }}
+        className="w-full animate-fade-in"
       >
         <div
-          className="relative rounded-2xl transition-all duration-200"
+          className="rounded-xl border p-4"
           style={{
-            background: 'var(--glass)',
-            border: '1px solid var(--accent)',
-            boxShadow: '0 0 0 3px var(--accent-glow), var(--shadow-md)',
-            backdropFilter: 'blur(12px)',
+            background: 'var(--surface-1)',
+            borderColor: 'var(--accent)',
+            boxShadow: 'var(--shadow-sm)',
           }}
         >
-          {/* Edit Header */}
-          <div
-            className="flex items-center gap-2 px-4 py-2.5 rounded-t-2xl"
-            style={{
-              background: 'var(--accent-glow)',
-              borderBottom: '1px solid var(--border)',
-            }}
-          >
-            <svg className="w-3.5 h-3.5" style={{ color: 'var(--accent-bright)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            <span className="text-[12px] font-semibold" style={{ color: 'var(--accent-bright)' }}>
-              Editing Link
+          <div className="flex items-center justify-between pb-3 mb-3 border-b" style={{ borderColor: 'var(--border)' }}>
+            <span className="text-[12px] font-medium" style={{ color: 'var(--text-primary)' }}>
+              Edit link
+            </span>
+            <span className="text-[10px] font-mono-meta hidden sm:inline" style={{ color: 'var(--text-tertiary)' }}>
+              Enter to save · Esc to cancel
             </span>
           </div>
 
-          {/* Edit Form */}
-          <div className="p-4 flex flex-col gap-3">
+          <div className="flex flex-col gap-3">
             <div>
-              <label className="block text-[11px] font-semibold mb-1 uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
+              <label className="block text-[11px] font-medium mb-1 uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
                 Platform
               </label>
               <input
@@ -161,12 +150,12 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
                 value={editPlatform}
                 onChange={(e) => setEditPlatform(e.target.value)}
                 onKeyDown={handleEditKeyDown}
-                placeholder="e.g., GitHub"
+                placeholder="e.g. GitHub"
                 className="text-[13px]"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold mb-1 uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
+              <label className="block text-[11px] font-medium mb-1 uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
                 Category
               </label>
               <input
@@ -174,12 +163,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
                 list={`category-suggestions-${link.id}`}
                 value={editCategory}
                 onChange={(e) => setEditCategory(e.target.value)}
-                className="w-full text-[13px] rounded-xl bg-transparent outline-none px-3 py-2.5"
-                style={{
-                  color: 'var(--text-primary)',
-                  border: '1.5px solid var(--border)',
-                  background: 'var(--surface-1)',
-                }}
+                className="text-[13px]"
               />
               <datalist id={`category-suggestions-${link.id}`}>
                 {(uniqueCategories.length > 0 ? uniqueCategories : CATEGORIES.filter(c => c !== 'All')).map(cat => (
@@ -188,7 +172,7 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               </datalist>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold mb-1 uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
+              <label className="block text-[11px] font-medium mb-1 uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
                 URL
               </label>
               <input
@@ -202,39 +186,21 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               />
             </div>
 
-            {/* Actions */}
             <div className="flex items-center gap-2 pt-1">
               <button
                 id={`edit-save-${link.id}`}
                 onClick={handleEditSave}
-                className="btn-shimmer flex items-center gap-1.5 px-4 py-2 rounded-xl text-[12px] font-semibold cursor-pointer transition-all duration-200 hover:shadow-lg active:scale-[0.97]"
-                style={{
-                  background: 'linear-gradient(135deg, var(--accent), var(--accent-dim))',
-                  color: '#fff',
-                  border: 'none',
-                  boxShadow: '0 2px 8px var(--accent-glow)',
-                }}
+                className="btn-primary px-3 py-1.5 text-[12px]"
               >
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
                 Save
               </button>
               <button
                 id={`edit-cancel-${link.id}`}
                 onClick={handleEditCancel}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-[0.97]"
-                style={{
-                  background: 'var(--surface-3)',
-                  color: 'var(--text-secondary)',
-                  border: '1px solid var(--border)',
-                }}
+                className="btn-ghost px-3 py-1.5 text-[12px]"
               >
                 Cancel
               </button>
-              <span className="text-[10px] ml-auto hidden sm:inline" style={{ color: 'var(--text-tertiary)' }}>
-                <kbd className="px-1.5 py-0.5 rounded-md text-[10px] font-mono" style={{ background: 'var(--surface-3)', color: 'var(--accent-bright)', border: '1px solid var(--border)' }}>Enter</kbd> save · <kbd className="px-1.5 py-0.5 rounded-md text-[10px] font-mono" style={{ background: 'var(--surface-3)', color: 'var(--accent-bright)', border: '1px solid var(--border)' }}>Esc</kbd> cancel
-              </span>
             </div>
           </div>
         </div>
@@ -246,12 +212,10 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
   return (
     <div
       id={`link-card-${link.id}`}
-      className="group animate-fade-in-up"
+      className="group animate-fade-in"
       style={{
-        animationDelay: `${index * 50}ms`,
         opacity: deleting ? 0 : undefined,
-        transform: deleting ? 'scale(0.95) translateY(-6px)' : undefined,
-        transition: 'opacity 0.3s ease, transform 0.3s ease',
+        transition: 'opacity 0.2s ease',
       }}
       draggable={!!dragHandlers}
       onDragStart={(e) => dragHandlers?.onDragStart(e, index)}
@@ -262,54 +226,45 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
       onDragEnd={dragHandlers?.onDragEnd}
     >
       <div
-        className="relative flex items-center gap-3.5 p-3.5 sm:p-4 rounded-xl link-card-inner"
+        className="relative flex items-center gap-3 p-3 rounded-xl border transition-colors card-quiet"
         style={{
-          background: 'var(--surface-2)',
-          border: '1px solid var(--border)',
-          boxShadow: 'var(--shadow-xs)',
-          transition: 'border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease',
+          background: 'var(--surface-1)',
+          borderColor: 'var(--border)',
           ...dragStyle
-        }}
-        onMouseEnter={(e) => {
-          if (isDragging) return;
-          e.currentTarget.style.borderColor = colors.border;
-          e.currentTarget.style.background = 'var(--surface-3)';
-          e.currentTarget.style.transform = 'translateY(-1px)';
-          e.currentTarget.style.boxShadow = `var(--shadow-sm), 0 0 16px ${colors.bg}`;
-        }}
-        onMouseLeave={(e) => {
-          if (isDragging) return;
-          e.currentTarget.style.borderColor = 'var(--border)';
-          e.currentTarget.style.background = 'var(--surface-2)';
-          e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = 'var(--shadow-xs)';
-          setConfirmDelete(false);
         }}
       >
         {/* Drag Handle */}
         {dragHandlers && (
-          <div className="shrink-0 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-60 hover:!opacity-100 transition-opacity p-1 -ml-2" style={{ color: 'var(--text-tertiary)' }}>
-            <svg width="12" height="20" viewBox="0 0 12 20" fill="currentColor">
-              <circle cx="4" cy="4" r="1.5" />
-              <circle cx="8" cy="4" r="1.5" />
-              <circle cx="4" cy="10" r="1.5" />
-              <circle cx="8" cy="10" r="1.5" />
-              <circle cx="4" cy="16" r="1.5" />
-              <circle cx="8" cy="16" r="1.5" />
+          <div 
+            className="shrink-0 cursor-grab active:cursor-grabbing opacity-30 hover:opacity-100 transition-opacity p-0.5" 
+            style={{ color: 'var(--text-tertiary)' }}
+            title="Drag to reorder"
+          >
+            <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor">
+              <circle cx="3" cy="3" r="1.2" />
+              <circle cx="7" cy="3" r="1.2" />
+              <circle cx="3" cy="8" r="1.2" />
+              <circle cx="7" cy="8" r="1.2" />
+              <circle cx="3" cy="13" r="1.2" />
+              <circle cx="7" cy="13" r="1.2" />
             </svg>
           </div>
         )}
 
         {/* Icon */}
         <div
-          className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden transition-transform duration-200 group-hover:scale-105"
-          style={{ background: colors.bg, color: colors.text }}
+          className="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center border"
+          style={{ 
+            background: 'var(--surface-2)', 
+            borderColor: 'var(--border)',
+            color: colors.text 
+          }}
         >
           {faviconUrl && !faviconError ? (
             <img 
               src={faviconUrl} 
               alt={link.platform} 
-              className="w-5 h-5 object-contain"
+              className="w-4.5 h-4.5 object-contain"
               onError={() => setFaviconError(true)}
             />
           ) : (
@@ -319,14 +274,14 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <p className="text-[13.5px] font-semibold leading-tight" style={{ color: 'var(--text-primary)' }}>
+          <p className="text-[13px] font-medium leading-snug" style={{ color: 'var(--text-primary)' }}>
             {link.platform}
           </p>
           <a
             href={getSafeUrl(link.url)}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[12px] leading-tight mt-0.5 block truncate hover:underline transition-colors"
+            className="text-[11.5px] leading-snug font-mono-meta block truncate hover:underline"
             style={{ color: 'var(--text-tertiary)' }}
             title={link.url}
           >
@@ -337,27 +292,20 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
         {/* Actions */}
         <div className="flex items-center gap-1 shrink-0">
           {confirmDelete ? (
-            <div className="flex items-center gap-1.5 animate-fade-in">
-              <span className="text-[10px] font-bold text-[var(--danger)] mr-1 uppercase tracking-wider">Sure?</span>
+            <div className="flex items-center gap-1">
               <button
                 id={`confirm-delete-${link.id}`}
                 onClick={handleDelete}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold cursor-pointer transition-all bg-[var(--danger)] text-white hover:brightness-110 active:scale-95 border-none"
+                className="px-2 py-1 rounded-md text-[11px] font-medium bg-[var(--danger)] text-white hover:opacity-90"
               >
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="hidden sm:inline">Delete</span>
+                Delete
               </button>
               <button
                 id={`cancel-delete-${link.id}`}
                 onClick={() => setConfirmDelete(false)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium cursor-pointer transition-all border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-3)] active:scale-95 bg-transparent"
+                className="px-2 py-1 rounded-md text-[11px] font-medium border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-2)]"
               >
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                <span className="hidden sm:inline">Cancel</span>
+                Cancel
               </button>
             </div>
           ) : (
@@ -365,26 +313,22 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               <button
                 id={`copy-${link.id}`}
                 onClick={handleCopy}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-95"
-                style={{
-                  background: copied ? 'var(--success-bg)' : 'transparent',
-                  color: copied ? 'var(--success)' : 'var(--text-secondary)',
-                  border: `1px solid ${copied ? 'rgba(52,211,153,0.2)' : 'var(--border)'}`,
-                }}
+                className="btn-ghost flex items-center gap-1 px-2.5 py-1 text-[11.5px]"
+                title="Copy link to clipboard"
               >
                 {copied ? (
                   <>
-                    <svg className="w-3 h-3 animate-copied-pop" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <svg className="w-3 h-3 text-[var(--success)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="hidden sm:inline">Copied!</span>
+                    <span>Copied</span>
                   </>
                 ) : (
                   <>
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
-                    <span className="hidden sm:inline">Copy</span>
+                    <span>Copy</span>
                   </>
                 )}
               </button>
@@ -392,49 +336,23 @@ export default function LinkCard({ link, onDelete, onEdit, index, dragIndex, ove
               <button
                 id={`edit-${link.id}`}
                 onClick={handleEditStart}
-                className="group-hover-show flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-95 opacity-0 group-hover:opacity-100"
-                style={{
-                  background: 'transparent',
-                  color: 'var(--accent-bright)',
-                  border: '1px solid transparent',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--accent-glow)';
-                  e.currentTarget.style.borderColor = 'rgba(129,140,248,0.15)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.borderColor = 'transparent';
-                }}
+                className="btn-icon p-1 text-[var(--text-secondary)]"
+                title="Edit link"
               >
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                <span className="hidden sm:inline">Edit</span>
               </button>
 
               <button
                 id={`delete-${link.id}`}
                 onClick={() => setConfirmDelete(true)}
-                className="group-hover-show flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[12px] font-medium cursor-pointer transition-all duration-200 active:scale-95 opacity-0 group-hover:opacity-100"
-                style={{
-                  background: 'transparent',
-                  color: 'var(--danger)',
-                  border: '1px solid transparent',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--danger-bg)';
-                  e.currentTarget.style.borderColor = 'rgba(251,113,133,0.15)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.borderColor = 'transparent';
-                }}
+                className="btn-icon-danger p-1"
+                title="Delete link"
               >
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
-                <span className="hidden sm:inline">Delete</span>
               </button>
             </>
           )}
