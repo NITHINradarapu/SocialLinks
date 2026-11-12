@@ -4,11 +4,11 @@ const THEME_KEY = 'linkhub_theme';
 const ACCENT_KEY = 'linkhub_accent';
 
 export const ACCENTS = {
-  indigo: { name: 'Indigo', color: '#818cf8', dim: '#6366f1', glow: 'rgba(129, 140, 248, 0.18)', bright: '#a5b4fc' },
-  emerald: { name: 'Emerald', color: '#34d399', dim: '#10b981', glow: 'rgba(52, 211, 153, 0.18)', bright: '#6ee7b7' },
-  rose: { name: 'Rose', color: '#fb7185', dim: '#f43f5e', glow: 'rgba(251, 113, 133, 0.18)', bright: '#fda4af' },
-  amber: { name: 'Amber', color: '#fbbf24', dim: '#f59e0b', glow: 'rgba(251, 191, 36, 0.18)', bright: '#fcd34d' },
-  cyan: { name: 'Cyan', color: '#22d3ee', dim: '#06b6d4', glow: 'rgba(34, 211, 238, 0.18)', bright: '#67e8f9' },
+  indigo: { name: 'Indigo', color: '#6366f1', dim: '#4f46e5', glow: 'rgba(99, 102, 241, 0.12)', bright: '#818cf8' },
+  emerald: { name: 'Emerald', color: '#10b981', dim: '#059669', glow: 'rgba(16, 185, 129, 0.12)', bright: '#34d399' },
+  rose: { name: 'Rose', color: '#e11d48', dim: '#be123c', glow: 'rgba(225, 29, 72, 0.12)', bright: '#fb7185' },
+  amber: { name: 'Amber', color: '#d97706', dim: '#b45309', glow: 'rgba(217, 119, 6, 0.12)', bright: '#f59e0b' },
+  cyan: { name: 'Cobalt', color: '#0284c7', dim: '#0369a1', glow: 'rgba(2, 132, 199, 0.12)', bright: '#38bdf8' },
 };
 
 export function useTheme() {

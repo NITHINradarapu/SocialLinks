@@ -77,30 +77,24 @@ export default function App() {
   if (loading || (!isPublicProfile && user && loadingLinks) || (!isPublicProfile && user && loadingProfile)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-6 h-6 border-2 border-[var(--text-primary)] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!isPublicProfile && user && (linksError || profileError)) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center animate-fade-in" style={{ background: 'var(--surface-1)' }}>
-        <div className="max-w-md w-full p-8 rounded-2xl border" style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}>
-          <div className="w-16 h-16 mx-auto mb-5 rounded-2xl flex items-center justify-center bg-red-500/10 border border-red-500/20 text-red-500">
-            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <h2 className="text-xl font-bold mb-2.5" style={{ color: 'var(--text-primary)' }}>Failed to load dashboard data</h2>
-          <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-            There was a connection or server error while retrieving your profile details and link list. Please try reloading the page.
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+        <div className="max-w-md w-full p-6 rounded-2xl border card-quiet" style={{ background: 'var(--surface-1)', borderColor: 'var(--border)' }}>
+          <h2 className="text-base font-medium mb-1.5 font-display" style={{ color: 'var(--text-primary)' }}>Failed to load dashboard data</h2>
+          <p className="text-[13px] mb-5 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            There was a connection or server error while retrieving your profile details and link list.
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="w-full py-2.5 rounded-lg text-[13px] font-semibold transition-all duration-200 cursor-pointer hover:brightness-110 active:scale-[0.98]"
-            style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-dim))', color: '#fff' }}
+            className="btn-primary w-full py-2 text-[13px]"
           >
-            Reload Page
+            Reload page
           </button>
         </div>
       </div>
@@ -176,10 +170,10 @@ export default function App() {
 
       {!hideLayout && (
         <footer
-          className="text-center pt-5 pb-20 sm:pb-24 text-[11px]"
+          className="text-center pt-5 pb-20 sm:pb-24 text-[11px] font-mono-meta"
           style={{ color: "var(--text-tertiary)" }}
         >
-          Built with <span style={{ color: "var(--accent)" }}>♥</span> — LinkHub
+          LinkHub · Personal directory
         </footer>
       )}
 

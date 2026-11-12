@@ -30,48 +30,42 @@ export default function LinkList({ links, onDelete, onEdit, onReorder }) {
   // ── Empty state ──
   if (links.length === 0) {
     return (
-      <div className="animate-fade-in-up w-full">
-        <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-2xl font-bold font-display" style={{ color: 'var(--text-primary)' }}>Your Links</h1>
+      <div className="w-full animate-fade-in">
+        <div className="flex items-baseline justify-between mb-4">
+          <h1 className="text-xl font-medium font-display" style={{ color: 'var(--text-primary)' }}>Your links</h1>
+          <span className="text-[12px] font-mono-meta" style={{ color: 'var(--text-tertiary)' }}>0 links</span>
         </div>
-        <p className="text-sm mb-10" style={{ color: 'var(--text-tertiary)' }}>No links yet — add one to get started.</p>
 
         <div
-          className="text-center py-16 px-8 rounded-2xl"
+          className="text-center py-14 px-6 rounded-2xl border"
           style={{
-            background: 'var(--glass)',
-            border: '1.5px dashed var(--border)',
-            backdropFilter: 'blur(8px)',
+            background: 'var(--surface-1)',
+            borderColor: 'var(--border)',
           }}
         >
           <div
-            className="w-16 h-16 mx-auto mb-5 rounded-2xl flex items-center justify-center animate-float"
+            className="w-12 h-12 mx-auto mb-3.5 rounded-xl flex items-center justify-center border"
             style={{
-              background: 'var(--accent-glow)',
-              border: '1px solid rgba(129,140,248,0.1)',
+              background: 'var(--surface-2)',
+              borderColor: 'var(--border)',
+              color: 'var(--text-secondary)',
             }}
           >
-            <svg className="w-8 h-8" style={{ color: 'var(--accent)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
             </svg>
           </div>
-          <p className="text-base font-semibold mb-1.5 font-display" style={{ color: 'var(--text-primary)' }}>Nothing here yet</p>
-          <p className="text-sm mb-6" style={{ color: 'var(--text-tertiary)' }}>Add your first profile link to get started.</p>
+          <p className="text-[14px] font-medium mb-1 font-display" style={{ color: 'var(--text-primary)' }}>No links saved yet</p>
+          <p className="text-[12px] mb-5" style={{ color: 'var(--text-secondary)' }}>Add your first profile link to start your directory.</p>
           <button
             id="empty-add-link"
             onClick={() => navigate('/add')}
-            className="btn-shimmer inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-[13px] font-semibold cursor-pointer transition-all duration-200 hover:shadow-lg active:scale-95"
-            style={{
-              background: 'linear-gradient(135deg, var(--accent), var(--accent-dim))',
-              color: '#fff',
-              border: 'none',
-              boxShadow: '0 4px 16px var(--accent-glow)',
-            }}
+            className="btn-primary inline-flex items-center gap-1.5 px-4 py-2 text-[12.5px]"
           >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
-            Add Link
+            <span>Add link</span>
           </button>
         </div>
       </div>
@@ -80,25 +74,20 @@ export default function LinkList({ links, onDelete, onEdit, onReorder }) {
 
   // ── With links ──
   return (
-    <div className="animate-fade-in-up w-full">
+    <div className="w-full animate-fade-in">
       {/* Header */}
-      <div className="mb-5 flex items-end justify-between">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-1 h-6 rounded-full" style={{ background: 'linear-gradient(to bottom, var(--accent), var(--accent-dim))' }}></div>
-            <h1 className="text-2xl font-bold font-display" style={{ color: 'var(--text-primary)' }}>Your Links</h1>
-          </div>
-          <p className="text-xs mt-1 ml-3.5" style={{ color: 'var(--text-tertiary)' }}>
-            {links.length} link{links.length !== 1 ? 's' : ''} saved
-          </p>
-        </div>
+      <div className="mb-4 flex items-baseline justify-between">
+        <h1 className="text-xl font-medium font-display" style={{ color: 'var(--text-primary)' }}>Your links</h1>
+        <span className="text-[12px] font-mono-meta" style={{ color: 'var(--text-tertiary)' }}>
+          {links.length} {links.length === 1 ? 'link' : 'links'}
+        </span>
       </div>
 
       {/* Search */}
       <div className="relative mb-3">
         <svg
-          className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none transition-colors"
-          style={{ color: search ? 'var(--accent)' : 'var(--text-tertiary)' }}
+          className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none transition-colors"
+          style={{ color: 'var(--text-tertiary)' }}
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -108,7 +97,7 @@ export default function LinkList({ links, onDelete, onEdit, onReorder }) {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search links…"
+          placeholder="Search links..."
           className="w-full text-[13px]"
           style={{ paddingLeft: '36px' }}
         />
@@ -116,8 +105,7 @@ export default function LinkList({ links, onDelete, onEdit, onReorder }) {
           <button
             id="clear-search"
             onClick={() => setSearch('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md cursor-pointer transition-all duration-200 hover:bg-[var(--surface-3)]"
-            style={{ color: 'var(--text-tertiary)' }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -126,34 +114,32 @@ export default function LinkList({ links, onDelete, onEdit, onReorder }) {
         )}
       </div>
 
-      {/* Categories */}
-      <div className="flex gap-1.5 overflow-x-auto pb-1 mb-5 scrollbar-hide" style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
-        {uniqueCategories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className="whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-250 border"
-            style={{
-              backgroundColor: selectedCategory === cat ? 'var(--accent)' : 'var(--surface-2)',
-              color: selectedCategory === cat ? '#fff' : 'var(--text-secondary)',
-              borderColor: selectedCategory === cat ? 'var(--accent)' : 'var(--border)',
-              boxShadow: selectedCategory === cat ? '0 2px 8px var(--accent-glow)' : 'none',
-              transform: selectedCategory === cat ? 'scale(1.02)' : 'scale(1)',
-            }}
-          >
-            {cat}
-          </button>
-        ))}
+      {/* Categories — quiet segmented control */}
+      <div className="flex gap-1.5 overflow-x-auto pb-1 mb-4 scrollbar-hide">
+        {uniqueCategories.map(cat => {
+          const isSelected = selectedCategory === cat;
+          return (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className="whitespace-nowrap px-3 py-1 rounded-lg text-[12px] font-medium transition-colors border"
+              style={{
+                backgroundColor: isSelected ? 'var(--surface-2)' : 'transparent',
+                color: isSelected ? 'var(--text-primary)' : 'var(--text-tertiary)',
+                borderColor: isSelected ? 'var(--border-hover)' : 'transparent',
+              }}
+            >
+              {cat}
+            </button>
+          );
+        })}
       </div>
 
       {/* Results */}
       {filtered.length === 0 ? (
-        <div className="text-center py-12 rounded-xl" style={{ background: 'var(--surface-1)', border: '1px dashed var(--border)' }}>
-          <svg className="w-8 h-8 mx-auto mb-3" style={{ color: 'var(--text-tertiary)', opacity: 0.5 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <p className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>
-            No links match your filters.
+        <div className="text-center py-10 rounded-xl border border-dashed" style={{ background: 'var(--surface-1)', borderColor: 'var(--border)' }}>
+          <p className="text-[13px] font-medium" style={{ color: 'var(--text-secondary)' }}>
+            No links match your search
           </p>
         </div>
       ) : (
